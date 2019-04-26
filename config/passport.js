@@ -1,5 +1,6 @@
 const passport = require('passport');
 const request = require('request');
+const config = require('./config');
 const { Strategy: InstagramStrategy } = require('passport-instagram');
 const { Strategy: LocalStrategy } = require('passport-local');
 const { Strategy: FacebookStrategy } = require('passport-facebook');
@@ -37,7 +38,13 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
     user.comparePassword(password, (err, isMatch) => {
       if (err) { return done(err); }
       if (isMatch) {
-        return done(null, user);
+        if (config.admins.includes(user.email)) {
+          return done(null, user);
+
+        } else {
+          return done(null, false, { msg: 'User*in nicht in Adminliste' });
+        }
+
       }
       return done(null, false, { msg: 'Invalid email or password.' });
     });

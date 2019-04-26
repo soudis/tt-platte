@@ -6,6 +6,24 @@ const _ = require('lodash');
 const User = require('../models/User');
 
 const randomBytesAsync = promisify(crypto.randomBytes);
+const Promise = require('bluebird');
+
+const render = (res, view, parameters) => {
+  return new Promise((resolve, reject) => {
+    res.render(view, parameters, (err, html) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(html);
+      }
+    }); 
+  })  
+}
+
+const sendError = (res, error) => {
+  console.log("ERROR: " + error);
+  res.status(500).send(error);
+}
 
 /**
  * GET /login
@@ -15,9 +33,32 @@ exports.getLogin = (req, res) => {
   if (req.user) {
     return res.redirect('/');
   }
-  res.render('account/login', {
-    title: 'Login'
-  });
+  render(res, "account/login", {})
+    .then(login => res.send({html: login}))
+    .catch(error => sendError(res, error));
+};
+
+/**
+ * GET /account
+ * Profile page.
+ */
+exports.getAccount = (req, res) => {
+  render(res, "account/profile", {})
+    .then(profile => res.send({html: profile}))
+    .catch(error => sendError(res, error));
+};
+
+/**
+ * GET /forgot
+ * Forgot Password page.
+ */
+exports.getForgot = (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+  render(res, "account/forgot", {})
+    .then(login => res.send({html: login}))
+    .catch(error => sendError(res, error));
 };
 
 /**
@@ -40,12 +81,12 @@ exports.postLogin = (req, res, next) => {
     if (err) { return next(err); }
     if (!user) {
       req.flash('errors', info);
-      return res.redirect('/login');
+      return res.redirect('/');
     }
     req.logIn(user, (err) => {
       if (err) { return next(err); }
-      req.flash('success', { msg: 'Success! You are logged in.' });
-      res.redirect(req.session.returnTo || '/');
+      req.flash('success', { msg: 'Du bist jetzt eingeloggt, ' + user.email + '!' });
+      res.redirect('/');
     });
   })(req, res, next);
 };
@@ -72,7 +113,7 @@ exports.getSignup = (req, res) => {
     return res.redirect('/');
   }
   res.render('account/signup', {
-    title: 'Create Account'
+    title: 'Account Erstellen'
   });
 };
 
@@ -81,9 +122,9 @@ exports.getSignup = (req, res) => {
  * Create a new local account.
  */
 exports.postSignup = (req, res, next) => {
-  req.assert('email', 'Email is not valid').isEmail();
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  req.assert('email', 'E-Mailadresse ist nicht gültig').isEmail();
+  req.assert('password', 'Passwort muss mindestes 4 Zeichen lang sein').len(4);
+  req.assert('confirmPassword', 'Passwörter stimmen nicht überein').equals(req.body.password);
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
   const errors = req.validationErrors();
@@ -101,7 +142,7 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, existingUser) => {
     if (err) { return next(err); }
     if (existingUser) {
-      req.flash('errors', { msg: 'Account with that email address already exists.' });
+      req.flash('errors', { msg: 'Für diese E-Mailadresse gibt es bereits einen Account.' });
       return res.redirect('/signup');
     }
     user.save((err) => {
@@ -117,21 +158,11 @@ exports.postSignup = (req, res, next) => {
 };
 
 /**
- * GET /account
- * Profile page.
- */
-exports.getAccount = (req, res) => {
-  res.render('account/profile', {
-    title: 'Account Management'
-  });
-};
-
-/**
  * POST /account/profile
  * Update profile information.
  */
 exports.postUpdateProfile = (req, res, next) => {
-  req.assert('email', 'Please enter a valid email address.').isEmail();
+  req.assert('email', 'Bitte eine gültige E-Mailadresse angeben.').isEmail();
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
   const errors = req.validationErrors();
@@ -151,13 +182,13 @@ exports.postUpdateProfile = (req, res, next) => {
     user.save((err) => {
       if (err) {
         if (err.code === 11000) {
-          req.flash('errors', { msg: 'The email address you have entered is already associated with an account.' });
+          req.flash('errors', { msg: 'Für diese E-Mailadresse gibt es bereits einen Account.' });
           return res.redirect('/account');
         }
         return next(err);
       }
-      req.flash('success', { msg: 'Profile information has been updated.' });
-      res.redirect('/account');
+      req.flash('success', { msg: 'Accountinformation wurde geändert.' });
+      res.redirect('/');
     });
   });
 };
@@ -182,8 +213,8 @@ exports.postUpdatePassword = (req, res, next) => {
     user.password = req.body.password;
     user.save((err) => {
       if (err) { return next(err); }
-      req.flash('success', { msg: 'Password has been changed.' });
-      res.redirect('/account');
+      req.flash('success', { msg: 'Passwort wurde geändert' });
+      res.redirect('/');
     });
   });
 };
@@ -196,7 +227,7 @@ exports.postDeleteAccount = (req, res, next) => {
   User.deleteOne({ _id: req.user.id }, (err) => {
     if (err) { return next(err); }
     req.logout();
-    req.flash('info', { msg: 'Your account has been deleted.' });
+    req.flash('info', { msg: 'Dein Account wurde gelöscht.' });
     res.redirect('/');
   });
 };
@@ -337,22 +368,11 @@ exports.postReset = (req, res, next) => {
 
   resetPassword()
     .then(sendResetPasswordEmail)
-    .then(() => { if (!res.finished) res.redirect('/'); })
+    .then(() => render(res, "partials/message", {message: "Passwort zurückgesetzt", type:"success"}))
+    .then((html) => { if (!res.finished) res.send({html:html}); })
     .catch(err => next(err));
 };
 
-/**
- * GET /forgot
- * Forgot Password page.
- */
-exports.getForgot = (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect('/');
-  }
-  res.render('account/forgot', {
-    title: 'Forgot Password'
-  });
-};
 
 /**
  * POST /forgot
@@ -436,6 +456,7 @@ exports.postForgot = (req, res, next) => {
   createRandomToken
     .then(setRandomToken)
     .then(sendForgotPasswordEmail)
-    .then(() => res.redirect('/forgot'))
+    .then(() => render(res, "partials/message", {message: "Passwort zurückgesetzt", type:"success"}))    
+    .then(html => res.send({html:html}))    
     .catch(next);
 };

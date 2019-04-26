@@ -1,16 +1,27 @@
 const nodemailer = require('nodemailer');
+const Promise = require('bluebird');
 
+const render = (res, view, parameters) => {
+  return new Promise((resolve, reject) => {
+    res.render(view, parameters, (err, html) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(html);
+      }
+    }); 
+  })  
+}
 /**
  * GET /contact
- * Contact form page.
+ * Contact form.
  */
 exports.getContact = (req, res) => {
   const unknownUser = !(req.user);
 
-  res.render('contact', {
-    title: 'Contact',
-    unknownUser,
-  });
+  render(res, "contact", {unknownUser})
+    .then(contact => res.send({html: contact}))
+    .catch(error => sendError(res, error));
 };
 
 /**
@@ -49,17 +60,15 @@ exports.postContact = (req, res) => {
     }
   });
   const mailOptions = {
-    to: 'your@email.com',
+    to: 'florian.humer@gmail.com',
     from: `${fromName} <${fromEmail}>`,
-    subject: 'Contact Form | Hackathon Starter',
+    subject: 'Anfrage | TT-Platte',
     text: req.body.message
   };
 
   return transporter.sendMail(mailOptions)
-    .then(() => {
-      req.flash('success', { msg: 'Email has been sent successfully!' });
-      res.redirect('/contact');
-    })
+    .then(() => render(res, "partials/message", {message: "E-Mail wurde versandt"}))
+    .then(html =>  res.send({html:html}))
     .catch((err) => {
       if (err.message === 'self signed certificate in certificate chain') {
         console.log('WARNING: Self signed certificate in certificate chain. Retrying with the self signed certificate. Use a valid certificate if in production.');
@@ -81,8 +90,8 @@ exports.postContact = (req, res) => {
     })
     .then((result) => {
       if (result) {
-        req.flash('success', { msg: 'Email has been sent successfully!' });
-        return res.redirect('/contact');
+        return render(res, "partials/message", {message: "E-Mail wurde versandt"})
+          .then(html =>  res.send({html:html}))
       }
     })
     .catch((err) => {

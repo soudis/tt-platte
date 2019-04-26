@@ -1,0 +1,26 @@
+include media
+
+.col-md-12
+  h4 Neuer Eintrag
+  hr
+form(action="/item/create" method="POST" role="form" id="create-item-form")
+  input(type='hidden', name='_csrf', value=_csrf)      
+  input(type='hidden', name='lat', value=lat)   
+  input(type='hidden', name='long', value=long)   
+  .form-group
+    label(for="title").col-md-12.control-label Name / Ort
+    .col-md-12
+      input.form-control(type="text" id="title" name="title" required)
+  .form-group
+    label(for="description").col-md-12.control-label Beschreibung
+    .col-md-12
+      textarea.form-control(rows="4" id="description" name="description" )
+  .form-group
+    label(for="pictures").col-md-12.control-label Fotos
+    .col-md-12(id="fine-uploader-gallery" csrf=_csrf)      
+  .form-group
+    .col-md-12
+      button.btn.btn-success.btn-sm(id='create-item')
+        i.fa.fa-plus
+        | &nbsp;
+        | Eintrag Erstellen

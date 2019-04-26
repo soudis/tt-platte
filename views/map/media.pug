@@ -1,0 +1,36 @@
+mixin upload_form(id)
+  h3 File Upload Form
+  .row
+    .col-md-6
+      p All files will be uploaded to "/uploads" directory.
+      form(role='form', enctype='multipart/form-data', method='POST')
+        .form-group
+          label.col-form-label.font-weight-bold File Input
+          .col-md-6
+            input(type='file', name='myFile')
+        button.btn.btn-primary(type='submit') Submit
+
+mixin carousel(media)
+  .carousel.slide(id="mediaCarousel" data-ride="carousel")
+    ol.carousel-indicators
+      - var first = true;
+      each val, index in media    
+        if (val.path)  
+          li(data-target="#mediaCarousel" data-slide-to=index class=(first?"active":""))
+          - first = false;
+    .carousel-inner
+      - var first = true;
+      each val, index in media
+        if (val.path)  
+          .carousel-item(class=(first?"active":""))
+            - first = false;
+            - var url = val.path.substring(val.path.indexOf('/', 1));
+            img.d-block.w-100(src=url alt=val.description)
+            .carousel-caption.d-none.d-md-block
+              p=val.description
+    a.carousel-control-prev(href="#mediaCarousel" role="button" data-slide="prev")
+      span.carousel-control-prev-icon(aria-hidden="true")
+      span.sr-only Zurück
+    a.carousel-control-next(href="#mediaCarousel" role="button" data-slide="next")
+      span.carousel-control-next-icon(aria-hidden="true")
+      span.sr-only Nächstes

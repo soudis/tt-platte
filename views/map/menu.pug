@@ -1,0 +1,12 @@
+a.btn.btn-success(href="/about"  data-toggle="tooltip" data-placement="left" title="Über TT-Platte")
+  i.fa.fa-info
+a.btn.btn-success(id="get-contact-form" href="#" data-toggle="tooltip" data-placement="left" title="Kontakt")
+  i.fa.fa-envelope
+if (user)
+  a.btn.btn-success(id="get-edit-account" href="#" data-toggle="tooltip" data-placement="left" title="User*innenprofil bearbeiten")
+    i.fa.fa-user
+  a.btn.btn-success(href="/logout" data-toggle="tooltip" data-placement="left" title="Logout")
+    i.fa.fa-sign-out-alt    
+else 
+  a.btn.btn-success(id="get-login" href="#" data-toggle="tooltip" data-placement="left" title="Login")
+    i.fa.fa-sign-in-alt

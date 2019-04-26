@@ -1,0 +1,14 @@
+{
+	"rating_criteria": {
+		"table_tennis": [
+			{ "name": "table", "label": "Tisch" },
+			{ "name": "athmosphere", "label": "Athmosphäre" },
+			{ "name": "silence", "label": "Ruhe" },
+			{ "name": "infrastructure", "label": "Infrastruktur" }
+		]
+	},
+	"admins": [
+		"florian.humer@gmail.com",
+		"birgit@servus.at"
+	]
+}

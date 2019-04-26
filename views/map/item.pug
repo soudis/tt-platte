@@ -1,0 +1,33 @@
+include media
+include ratings
+
+
+
+.popup-container
+  - var avgRating = item.avgRating()
+  h4.item-title
+    raw=item.title
+    | &nbsp;      
+    +rating(avgRating.avg, "small", true)
+  hr
+  if item.description
+    p=item.description
+  else
+    p Keine Beschreibung vorhanden
+  if item.media && item.media.length > 0
+    +carousel(item.media)
+  if (user)
+    - var rating = helper.getRating(user, item);
+    .row
+      .col-sm-12(style="margin-bottom: 6px; margin-top:6px;") 
+        b Deine Bewertung:
+    .rating-container.row
+      +rating_form(item)
+  +rating_total(avgRating)
+  if user
+    button.btn.btn-success.btn-sm.float-right(id="remove-item" ref-id=item._id)
+      i.fa.fa-trash    
+    button.btn.btn-success.btn-sm.float-right(id="edit-item" ref-id=item._id)
+      i.fa.fa-edit
+    p.button-spacer &nbsp;
+

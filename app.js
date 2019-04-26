@@ -19,6 +19,8 @@ const expressValidator = require('express-validator');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+const helper = require('./utils/helper');
+const config = require('./config/config');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
@@ -34,6 +36,9 @@ const homeController = require('./controllers/home');
 const userController = require('./controllers/user');
 const apiController = require('./controllers/api');
 const contactController = require('./controllers/contact');
+const mapController = require('./controllers/map');
+const mediaController = require('./controllers/media');
+
 
 /**
  * API keys and Passport configuration.
@@ -88,8 +93,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+const csrfExcluded = [
+  '/media/upload',
+  '/media/delete',
+  '/item/delete',  
+  '/item/fetch',
+  '/item/create',
+  '/item/rate'
+]
 app.use((req, res, next) => {
-  if (req.path === '/api/upload') {
+  if (csrfExcluded.find((entry) => {
+    return req.path.startsWith(entry);
+  })) {
     next();
   } else {
     lusca.csrf()(req, res, next);
@@ -98,8 +113,11 @@ app.use((req, res, next) => {
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
 app.disable('x-powered-by');
+
 app.use((req, res, next) => {
   res.locals.user = req.user;
+  res.locals.helper = helper;
+  res.locals.config = config;
   next();
 });
 app.use((req, res, next) => {
@@ -117,16 +135,32 @@ app.use((req, res, next) => {
   next();
 });
 app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: 31557600000 }));
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/chart.js/dist'), { maxAge: 31557600000 }));
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/popper.js/dist/umd'), { maxAge: 31557600000 }));
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js'), { maxAge: 31557600000 }));
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/jquery/dist'), { maxAge: 31557600000 }));
 app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'), { maxAge: 31557600000 }));
+app.use('/fine-uploader', express.static(path.join(__dirname, 'node_modules/fine-uploader/jquery.fine-uploader'), { maxAge: 31557600000 }));
 
 /**
  * Primary app routes.
  */
-app.get('/', homeController.index);
+app.get('/',mapController.showMap);
+
+app.get('/item/fetch',mapController.fetchItems);
+app.post('/item/create', passportConfig.isAuthenticated, mapController.createItem);
+app.get('/item/create/:lat/:long', passportConfig.isAuthenticated, mapController.getCreateItem);
+app.post('/item/edit', passportConfig.isAuthenticated, mapController.editItem);
+app.get('/item/edit/:id', passportConfig.isAuthenticated, mapController.getEditItem);
+app.get('/item/delete/:id', passportConfig.isAuthenticated, mapController.deleteItem);
+app.put('/item/rate/:item_id/:criteria_name/:rating_value', passportConfig.isAuthenticated, mapController.rateItemCriteria);
+
+app.get('/map/menu', mapController.renderMenu);
+
+app.post('/media/upload',passportConfig.isAuthenticated, mediaController.upload);
+app.delete('/media/delete/:uuid',passportConfig.isAuthenticated, mediaController.delete);
+
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
@@ -138,7 +172,6 @@ app.get('/signup', userController.getSignup);
 app.post('/signup', userController.postSignup);
 app.get('/contact', contactController.getContact);
 app.post('/contact', contactController.postContact);
-app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
 app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
@@ -171,8 +204,6 @@ app.get('/api/paypal', apiController.getPayPal);
 app.get('/api/paypal/success', apiController.getPayPalSuccess);
 app.get('/api/paypal/cancel', apiController.getPayPalCancel);
 app.get('/api/lob', apiController.getLob);
-app.get('/api/upload', apiController.getFileUpload);
-app.post('/api/upload', upload.single('myFile'), apiController.postFileUpload);
 app.get('/api/pinterest', passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getPinterest);
 app.post('/api/pinterest', passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.postPinterest);
 app.get('/api/google-maps', apiController.getGoogleMaps);

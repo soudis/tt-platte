@@ -2,16 +2,19 @@ version: '3'
 services:
   mongo:
     image: mongo:3.6
+    container_name: tt-platte-mongo
   web:
     build: .
+    container_name: tt-platte
     ports:
-     - "8080:8080"
+     - "8084:8080"
     environment:
      - MONGODB_URI=mongodb://mongo:27017/test 
     links:
      - mongo 
     depends_on: 
-     - mongo 
+     - mongo
+    command: nodemon -e js,pug app.js
     volumes:
      - .:/starter
      - /starter/node_modules

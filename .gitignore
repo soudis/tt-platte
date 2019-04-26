@@ -12,6 +12,7 @@ pids
 logs
 results
 tmp
+uploads
 
 # Optional npm cache directory
 .npm

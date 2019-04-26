@@ -1,0 +1,25 @@
+include media
+
+.col-md-12
+  h4 Eintrag Bearbeiten
+  hr
+form(action="/item/edit" method="POST" role="form" id="edit-item-form" ref-id=item._id)
+  input(type='hidden', name='id', value=item._id)      
+  input(type='hidden', name='_csrf', value=_csrf)      
+  input(type='hidden', name='lat', value=item.latLong[0])   
+  input(type='hidden', name='long', value=item.latLong[1])   
+  .form-group
+    label(for="title").col-md-12.control-label Name / Ort
+    .col-md-12
+      input.form-control(type="text" id="title" name="title" value=item.title required)
+  .form-group
+    label(for="description").col-md-12.control-label Beschreibung
+    .col-md-12
+      textarea.form-control(rows="4" id="description" name="description" )=item.description
+  div(id="fine-uploader-gallery")
+  .form-group
+    .col-sm-offset-2.col-sm-12
+      button.btn.btn-success.btn-sm(id='edit-item-submit')
+        i.fa.fa-edit
+        | &nbsp;
+        | Eintrag Speichern

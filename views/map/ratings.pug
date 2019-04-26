@@ -1,0 +1,37 @@
+mixin rating(ratingValue, addClass, showNumber)
+    input.rating-value(type="hidden" data-rating-value=ratingValue)
+    each val in [1, 2, 3, 4, 5]
+      span.fa.fa-table-tennis(data-rating=val class=addClass + " " + (ratingValue>=val?"star-rating-on":"star-rating-off"))
+    if (showNumber)
+      raw &nbsp;
+      span.small (#{ratingValue})
+
+
+mixin rating_criteria_input(item, criteria)
+  - var criteriaRating = helper.getRatingCriteria(user, item, criteria) || 0;
+  .col-3.text-right
+    span=criteria.label
+      | :&nbsp;
+  .col-3(id="rating_criteria_" + criteria.name + "_" + item._id data-criteria-rating=criteriaRating data-criteria-name=criteria.name data-item-id=item._id)
+    each val in [1, 2, 3, 4, 5]
+      span.fa.fa-table-tennis.rating-criteria-input(data-rating=val ref-id="rating_criteria_" + criteria.name + "_" + item._id class=(criteriaRating>=val?"star-rating-on":"star-rating-off"))
+
+
+mixin rating_form(item)
+  each criteria in config.rating_criteria[item.type]  
+    +rating_criteria_input(item, criteria)
+
+mixin rating_total(avgRating)
+  .rating-total
+    .row
+      .col-sm-12(style="margin-bottom: 6px;") 
+        b Gesamtbewertung:
+    .rating-container.row
+      each criteria in avgRating.criteria
+        .text-right.col-3
+          span= helper.getCriteriaLabel(criteria.name)
+          | :
+        .col-3
+          +rating(criteria.value)
+          | &nbsp
+          span.small (#{criteria.value})

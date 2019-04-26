@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
+const Media = require('./Media')
 
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
@@ -20,7 +21,6 @@ const userSchema = new mongoose.Schema({
 
   profile: {
     name: String,
-    gender: String,
     location: String,
     website: String,
     picture: String

@@ -1,16 +1,16 @@
-extends ../layout
-
-block content
-  .pb-2.mt-2.mb-4.border-bottom
-    h3 Forgot Password
-  form(method='POST')
-    input(type='hidden', name='_csrf', value=_csrf)
-    p.pb-4 Enter your email address below and we will send you password reset instructions.
-    .form-group.row
-      label.col-md-3.col-form-label.font-weight-bold.text-right(for='email') Email
-      .col-md-7
-        input.form-control(type='email', name='email', id='email', placeholder='Email', autofocus, autocomplete='email', required)
-    .form-group.offset-sm-3.col-md-7.pl-2
-      button.btn.btn-primary(type='submit')
-        i.fas.fa-key.fa-sm
-        | Reset Password
+.col-md-12
+  h3 Passwort vergessen
+  hr
+form(id="lostpasswd-form" method='POST' action="/forgot" role="form")  
+  input(type='hidden', name='_csrf', value=_csrf)
+  .col-md-12
+    p Bitte gib deine E-Mail Adresse an und wir senden dir eine E-Mail mit einem Link um dein Passwort zurückzusetzen.
+  .form-group
+    label.col-md-12.control-label(for='email') E-Mail Adresse
+    .col-md-12
+      input.form-control(type='email', name='email', id='email', placeholder='E-Mail Adresse', autofocus, autocomplete='email', required)
+  .form-group.col-md-12
+    button.btn.btn-success.btn-sm(id="post-lostpasswd")
+      i.fas.fa-key.fa-sm
+      | &nbsp;
+      | Passwort zurücksetzen

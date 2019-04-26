@@ -2,7 +2,7 @@
   .container
     a.navbar-brand(href='/')
       i.fas.fa-cube
-      | Project name
+      | TT-Platte
     button.navbar-toggler(type='button', data-toggle='collapse', data-target='.navbar-collapse')
       span.sr-only Toggle navigation
       span.navbar-toggler-icon
@@ -21,7 +21,7 @@
           li.nav-item(class=(title === 'Login') ? 'active' : undefined)
             a.nav-link(href='/login') Login
           li.nav-item(class=(title === 'Create Account') ? 'active' : undefined)
-            a.nav-link(href='/signup') Create Account
+            a.nav-link(href='/signup') Registrieren
         else
           li.dropdown(class=(title === 'Account Management') ? 'active' : undefined).nav-item
             a.dropdown-toggle.nav-link(href='#', data-toggle='dropdown')
