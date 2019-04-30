@@ -1,4 +1,4 @@
-var map = L.map('map').setView([48.2953, 14.253], 13);
+var map = L.map('map').setView([48.2953, 14.273], 13);
 
 
 L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -324,6 +324,18 @@ $(document).on("click", "#get-login", function (e) {
   });    
 });
 
+$(document).on("click", "#get-signup", function (e) {
+  removeTemporary();  
+  $.ajax({
+      type: 'get',     
+      dataType: 'json',
+      url: '/signup',
+      success: showControlPane,
+      error: showError
+  });    
+});
+
+
 $(document).on("click", "#get-edit-account", function (e) {
   removeTemporary();  
   $.ajax({
@@ -474,6 +486,13 @@ $(document).on("click", "#close-message-pane", function (e) {
   }   
 });
 
+var logo = L.control({position: 'bottomleft'});
+logo.onAdd = function(map){
+  var div = L.DomUtil.create('div', 'logo-watermark');
+  div.innerHTML= '<img width="100px" src="tt_logo.png"/>';
+  return div;
+}
+
 $(document).ready(function() {
 
   if ( $("#flash_messages").length ) {
@@ -481,5 +500,39 @@ $(document).ready(function() {
     showMessagePane(type, $("#flash_messages").html());
   }
 
+  if ($("#logo-overlay").length == 0) {
+    $(".blurred").addClass("unblurred");
+    logo.addTo(map);  
+  }
 });
 
+
+$( document ).on("click", ".title-logo", function() {
+  var $target = $(".title-logo");
+  var $pos = $target.position();
+  var $width = $target.css("width");
+  var $height = $target.css("height");
+  $target.css("top", $pos.top - $height/2);
+  $target.css("left", $pos.left - $width/2);
+  $target.explodeRestore();
+  $target.explode({
+      maxWidth: 50,
+      minWidth: 25,
+      radius: 1000,
+      release: false,
+      recycle: false,
+      explodeTime: 320,
+      canvas: true,
+      round: false,
+      maxAngle: 360,
+      gravity: 5,
+      groundDistance: 2000,
+  });
+  $(".blurred").addClass("unblurred");
+
+  setTimeout(() => {
+    $("#logo-overlay").remove();
+    logo.addTo(map);  
+  }, 3000);
+
+});

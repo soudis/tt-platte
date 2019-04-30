@@ -1,7 +1,10 @@
 extends ../layout_map
 
-block content
-  div(id="map")
+block content  
+  div.blurred(id="map")
+  if (!user)
+    div.row.h-100.z-top(id="logo-overlay")
+      img.title-logo(src="tt_logo.png")
   div(id="popup" class="ol-popup")
     a(href="#" id="popup-closer" class="ol-popup-closer")
     div(id="popup-content")

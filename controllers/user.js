@@ -112,9 +112,9 @@ exports.getSignup = (req, res) => {
   if (req.user) {
     return res.redirect('/');
   }
-  res.render('account/signup', {
-    title: 'Account Erstellen'
-  });
+  render(res, "account/signup", {})
+    .then(login => res.send({html: login}))
+    .catch(error => sendError(res, error));
 };
 
 /**
@@ -131,7 +131,7 @@ exports.postSignup = (req, res, next) => {
 
   if (errors) {
     req.flash('errors', errors);
-    return res.redirect('/signup');
+    return res.redirect('/');
   }
 
   const user = new User({
@@ -143,7 +143,7 @@ exports.postSignup = (req, res, next) => {
     if (err) { return next(err); }
     if (existingUser) {
       req.flash('errors', { msg: 'Für diese E-Mailadresse gibt es bereits einen Account.' });
-      return res.redirect('/signup');
+      return res.redirect('/');
     }
     user.save((err) => {
       if (err) { return next(err); }
