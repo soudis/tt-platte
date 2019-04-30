@@ -1,12 +1,27 @@
 var map = L.map('map').setView([48.2953, 14.273], 13);
 
 
-L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token={accessToken}', {
+var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets-satellite/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
+    maxZoom: 23,
+    id: 'mapbox.satellite',
+    accessToken: 'pk.eyJ1Ijoic291ZGlzIiwiYSI6ImNqdXNwMmdyYTBsdng0NHA1OHoxb3UyMDMifQ._7f-z0VD4yYRRz97YjtxXg'
+}).addTo(map);
+
+var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 23,
     id: 'mapbox.streets',
     accessToken: 'pk.eyJ1Ijoic291ZGlzIiwiYSI6ImNqdXNwMmdyYTBsdng0NHA1OHoxb3UyMDMifQ._7f-z0VD4yYRRz97YjtxXg'
 }).addTo(map);
+
+var baseMaps = {
+    "Satellit": satellite,
+    "Karte": streets
+};
+
+
+L.control.layers(baseMaps).addTo(map);
 
 var menuControl
 function createMenu(menu) {
