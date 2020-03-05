@@ -1,4 +1,3 @@
-var map = L.map('map').setView([48.2953, 14.273], 13);
 
 
 var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets-satellite/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -6,14 +5,20 @@ var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets-sate
     maxZoom: 23,
     id: 'mapbox.satellite',
     accessToken: 'pk.eyJ1Ijoic291ZGlzIiwiYSI6ImNqdXNwMmdyYTBsdng0NHA1OHoxb3UyMDMifQ._7f-z0VD4yYRRz97YjtxXg'
-}).addTo(map);
+})
 
 var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 23,
     id: 'mapbox.streets',
     accessToken: 'pk.eyJ1Ijoic291ZGlzIiwiYSI6ImNqdXNwMmdyYTBsdng0NHA1OHoxb3UyMDMifQ._7f-z0VD4yYRRz97YjtxXg'
-}).addTo(map);
+})
+
+var map = L.map('map', {
+    center: [48.2953, 14.273],
+    zoom: 13,
+    layers: [ streets]
+});
 
 var baseMaps = {
     "Satellit": satellite,
@@ -21,7 +26,7 @@ var baseMaps = {
 };
 
 
-L.control.layers(baseMaps).addTo(map);
+L.control.layers(baseMaps, undefined).addTo(map);
 
 var menuControl
 /*function createMenu(menu) {
@@ -134,7 +139,7 @@ const onPopupOpen = (event) => {
 items = {};
 
 const addItem = (item) => {
-  items[item.id] = L.marker(item.latLong, {icon: tableIcon}).addTo(map).bindPopup(item.html, { maxWidth: "auto"}).on('popupopen', onPopupOpen);
+  items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true}).addTo(map).bindPopup(item.html, { maxWidth: "auto"}).on('popupopen', onPopupOpen);
 }
 
 const removeItem = (id) => {
@@ -328,7 +333,7 @@ $(document).on("click", "#close-control-pane", function (e) {
   }   
 });
 
-$(document).on("click", "#get-login", function (e) {
+/*$(document).on("click", "#get-login", function (e) {
   removeTemporary();  
   $.ajax({
       type: 'get',     
@@ -429,7 +434,7 @@ $(document).on("click", "#send-contact-form", function (e) {
       showMessagePane("error", error.html);      
     }
   });    
-});
+});*/
 
 $(document).on("click", "span.rating-criteria-input", function (e) {
   e.preventDefault();
@@ -504,7 +509,7 @@ $(document).on("click", "#close-message-pane", function (e) {
 var logo = L.control({position: 'bottomleft'});
 logo.onAdd = function(map){
   var div = L.DomUtil.create('div', 'logo-watermark');
-  div.innerHTML= '<img width="100px" src="tt_logo.png"/>';
+  div.innerHTML= '<img width="92px" src="tt_logo_bunt.png"/>';
   return div;
 }
 
