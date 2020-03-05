@@ -3,6 +3,7 @@ extends ../layout_map
 block content  
 
   .top-container.col-xl-4.col-lg-6.col-md-12.col-xs-12.mx-auto
+    include ../partials/flash_page    
     h4 Profilinformationen Bearbeiten
     hr
     form(method='POST' action="/account/profile" role="form")

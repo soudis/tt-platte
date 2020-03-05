@@ -9,6 +9,8 @@ services:
     ports:
      - "8084:8080"
     environment:
+     - SENDGRID_USER=soudis
+     - SENDGRID_PASSWORD=m4auliman
      - MONGODB_URI=mongodb://mongo:27017/test 
     links:
      - mongo 

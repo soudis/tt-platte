@@ -61,8 +61,8 @@ exports.getForgot = (req, res) => {
  * Sign in using email and password.
  */
 exports.postLogin = (req, res, next) => {
-  req.assert('email', 'Email is not valid').isEmail();
-  req.assert('password', 'Password cannot be blank').notEmpty();
+  req.assert('email', 'E-Mailadresse nicht gültig').isEmail();
+  req.assert('password', 'Das Passwort darf nicht leer sein').notEmpty();
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
   const errors = req.validationErrors();
@@ -76,7 +76,7 @@ exports.postLogin = (req, res, next) => {
     if (err) { return next(err); }
     if (!user) {
       req.flash('errors', info);
-      return res.redirect('/');
+      return res.redirect('/login');
     }
     req.logIn(user, (err) => {
       if (err) { return next(err); }
@@ -191,8 +191,8 @@ exports.postUpdateProfile = (req, res, next) => {
  * Update current password.
  */
 exports.postUpdatePassword = (req, res, next) => {
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  req.assert('password', 'Das Passwort muss mindestens 4 Zeichen lang sein.').len(4);
+  req.assert('confirmPassword', 'Die Passwörter stimmen nicht überein.').equals(req.body.password);  
 
   const errors = req.validationErrors();
 
@@ -272,11 +272,11 @@ exports.getReset = (req, res, next) => {
     .exec((err, user) => {
       if (err) { return next(err); }
       if (!user) {
-        req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
+        req.flash('errors', { msg: 'Der Link zum Zurücksetzen des Passworts ist abgelaufen.' });
         return res.redirect('/forgot');
       }
       res.render('account/reset', {
-        title: 'Password Reset'
+        title: 'Passwort Zurücksetzen'
       });
     });
 };
@@ -286,8 +286,8 @@ exports.getReset = (req, res, next) => {
  * Process the reset password request.
  */
 exports.postReset = (req, res, next) => {
-  req.assert('password', 'Password must be at least 4 characters long.').len(4);
-  req.assert('confirm', 'Passwords must match.').equals(req.body.password);
+  req.assert('password', 'Das Passwort muss mindestens 4 Zeichen lang sein.').len(4);
+  req.assert('confirm', 'Die Passwörter stimmen nicht überein.').equals(req.body.password);
 
   const errors = req.validationErrors();
 
@@ -327,13 +327,13 @@ exports.postReset = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
-      subject: 'Your Hackathon Starter password has been changed',
-      text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
+      from: 'no-reply@tt-platte.org',
+      subject: 'Dein Passwort auf TT-Platte wurde geändert',
+      text: `Hi,\n\nDein Passwort für den Account ${user.email} auf tt-platte.org wurde geändert.\n`
     };
     return transporter.sendMail(mailOptions)
       .then(() => {
-        req.flash('success', { msg: 'Success! Your password has been changed.' });
+        req.flash('success', { msg: 'Dein Passwort wurde geändert.' });
       })
       .catch((err) => {
         if (err.message === 'self signed certificate in certificate chain') {
@@ -350,7 +350,7 @@ exports.postReset = (req, res, next) => {
           });
           return transporter.sendMail(mailOptions)
             .then(() => {
-              req.flash('success', { msg: 'Success! Your password has been changed.' });
+              req.flash('success', { msg: 'Dein Passwort wurde geändert.' });
             });
         }
         console.log('ERROR: Could not send password reset confirmation email after security downgrade.\n', err);
@@ -361,8 +361,9 @@ exports.postReset = (req, res, next) => {
 
   resetPassword()
     .then(sendResetPasswordEmail)
-    .then(() => render(res, "partials/message", {message: "Passwort zurückgesetzt", type:"success"}))
-    .then((html) => { if (!res.finished) res.send({html:html}); })
+    .then(() => {
+      res.redirect('/');      
+    })
     .catch(err => next(err));
 };
 
@@ -372,7 +373,7 @@ exports.postReset = (req, res, next) => {
  * Create a random token, then the send user an email with a reset link.
  */
 exports.postForgot = (req, res, next) => {
-  req.assert('email', 'Please enter a valid email address.').isEmail();
+  req.assert('email', 'E-Mailadresse ist nicht gültig.').isEmail();
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
   const errors = req.validationErrors();
@@ -390,7 +391,7 @@ exports.postForgot = (req, res, next) => {
       .findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          req.flash('errors', { msg: 'Account with that email address does not exist.' });
+          req.flash('errors', { msg: 'Ein Account mit dieser E-Mailadresse existiert nicht' });
         } else {
           user.passwordResetToken = token;
           user.passwordResetExpires = Date.now() + 3600000; // 1 hour
@@ -411,16 +412,16 @@ exports.postForgot = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
-      subject: 'Reset your password on Hackathon Starter',
-      text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
-        Please click on the following link, or paste this into your browser to complete the process:\n\n
+      from: 'no-reply@tt-platte.org',
+      subject: 'Passwort für TT-Platte zurücksetzen',
+      text: `Du bekommst diese E-Mail weil du dein Passwort auf tt-platte.org zurückgesetzt hast.\n\n
+        Bitte klicke auf den folgenden Link und folge den Anweisungen:\n\n
         http://${req.headers.host}/reset/${token}\n\n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        Falls du dein Passwort nicht zurücksetzen willst, ignoriere diese Nachricht.\n`
     };
     return transporter.sendMail(mailOptions)
       .then(() => {
-        req.flash('info', { msg: `An e-mail has been sent to ${user.email} with further instructions.` });
+        req.flash('success', { msg: `Eine E-mail mit einem Link wurde an ${user.email} versandt.` });
       })
       .catch((err) => {
         if (err.message === 'self signed certificate in certificate chain') {
@@ -437,11 +438,11 @@ exports.postForgot = (req, res, next) => {
           });
           return transporter.sendMail(mailOptions)
             .then(() => {
-              req.flash('info', { msg: `An e-mail has been sent to ${user.email} with further instructions.` });
+              req.flash('success', { msg: `Eine E-mail mit einem Link wurde an ${user.email} versandt.` });
             });
         }
         console.log('ERROR: Could not send forgot password email after security downgrade.\n', err);
-        req.flash('errors', { msg: 'Error sending the password reset message. Please try again shortly.' });
+        req.flash('errors', { msg: 'E-Mail konnte nicht versandt werden' });
         return err;
       });
   };
@@ -449,7 +450,9 @@ exports.postForgot = (req, res, next) => {
   createRandomToken
     .then(setRandomToken)
     .then(sendForgotPasswordEmail)
-    .then(() => render(res, "partials/message", {message: "Passwort zurückgesetzt", type:"success"}))    
-    .then(html => res.send({html:html}))    
+    .then(() => {
+      req.flash('success', { msg: 'Passwort zurückgesetzt' });
+      res.redirect('/');
+    })
     .catch(next);
 };

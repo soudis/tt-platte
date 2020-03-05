@@ -3,18 +3,20 @@ extends ../layout_map
 block content  
 
   .top-container.col-xl-4.col-lg-6.col-md-12.col-xs-12.mx-auto
-    h3 Reset Password
+    include ../partials/flash_page
+    h3 Passwort zurücksetzen
     form(method='POST' role="form")
       input(type='hidden', name='_csrf', value=_csrf)
-      .form-group.row
-        label.col-md-3.col-form-label.font-weight-bold.text-right(for='password') New Password
-        .col-md-7
-          input.form-control(type='password', name='password', id='password', placeholder='New password', autofocus, autocomplete='new-password', required)
-      .form-group.row
-        label.col-md-3.col-form-label.font-weight-bold.text-right(for='confirm') Confirm Password
-        .col-md-7
-          input.form-control(type='password', name='confirm', id='confirm', placeholder='Confirm password', autocomplete='new-password', required)
-      .form-group.offset-sm-3.col-md-7.pl-2
-        button.btn.btn-primary.btn-reset(type='submit')
-          i.far.fa-keyboard.fa-sm
-          | Change Password
+      .form-group
+        label.col-md-12.control-label(for='password') Neues Passwort
+        .col-md-12
+          input.form-control(type='password', name='password', id='password', placeholder='Neues Passwort', autocomplete='new-password', required)
+      .form-group
+        label.col-md-12.control-label(for='confirmPassword') Passwort Wiederholen
+        .col-md-12
+          input.form-control(type='password', name='confirm', id='confirm', placeholder='Passwort Wiederholen', autocomplete='new-password', required)
+      .form-group.col-md-12
+        button.btn.btn-success(type='submit')
+          i.fas.fa-keyboard.fa-sm
+          | &nbsp;
+          | Password Ändern

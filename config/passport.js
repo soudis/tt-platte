@@ -46,7 +46,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
         }
 
       }
-      return done(null, false, { msg: 'Invalid email or password.' });
+      return done(null, false, { msg: 'E-Mailadresse oder Passwort nicht gültig.' });
     });
   });
 }));

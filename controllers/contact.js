@@ -71,8 +71,10 @@ exports.postContact = (req, res) => {
   };
 
   return transporter.sendMail(mailOptions)
-    .then(() => render(res, "partials/message", {message: "E-Mail wurde versandt"}))
-    .then(html =>  res.send({html:html}))
+    .then(() => {
+      req.flash('success', { msg: 'Nachricht wurde versadt!' });
+      return res.redirect('/');      
+    })
     .catch((err) => {
       if (err.message === 'self signed certificate in certificate chain') {
         console.log('WARNING: Self signed certificate in certificate chain. Retrying with the self signed certificate. Use a valid certificate if in production.');
@@ -89,18 +91,18 @@ exports.postContact = (req, res) => {
         return transporter.sendMail(mailOptions);
       }
       console.log('ERROR: Could not send contact email after security downgrade.\n', err);
-      req.flash('errors', { msg: 'Error sending the message. Please try again shortly.' });
-      return false;
+      req.flash('errors', { msg: 'Fehler beim Senden der Nachricht' });
+      return res.redirect('/contact');
     })
     .then((result) => {
       if (result) {
-        return render(res, "partials/message", {message: "E-Mail wurde versandt"})
-          .then(html =>  res.send({html:html}))
+        req.flash('success', { msg: 'Nachricht wurde versadt!' });
+        return res.redirect('/');
       }
     })
     .catch((err) => {
       console.log('ERROR: Could not send contact email.\n', err);
-      req.flash('errors', { msg: 'Error sending the message. Please try again shortly.' });
+      req.flash('errors', { msg: 'Fehler beim Senden der Nachricht' });
       return res.redirect('/contact');
     });
 };

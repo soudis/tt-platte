@@ -1,8 +1,8 @@
 extends ../layout_map
 
 block content  
-  div.blurred(id="map")
-  if (!user)
+  div(id="map" class=(session.visited < 2?"blurred":""))
+  if (session.visited < 2)
     div.row.h-100.z-top(id="logo-overlay")
       img.title-logo(width="592" src="tt_logo_bunt.png")
   div(id="popup" class="ol-popup")

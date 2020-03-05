@@ -116,6 +116,12 @@ app.disable('x-powered-by');
 
 app.use((req, res, next) => {
   res.locals.user = req.user;
+  if (!req.session.visited) {
+    req.session.visited = 1;
+  } else {
+    req.session.visited ++;
+  }
+  res.locals.session = req.session;
   res.locals.helper = helper;
   res.locals.config = config;
   next();
