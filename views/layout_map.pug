@@ -97,8 +97,11 @@ html
 
   body
 
-    include partials/flash
-    block content
+    include partials/header
+
+    .container.h-100.row
+      include partials/flash
+      block content
 
     script(src='/js/lib/jquery.min.js')
     script(src='/js/lib/popper.min.js')

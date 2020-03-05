@@ -1,24 +1,28 @@
-.col-md-12
-  h4 Feedback
-  hr
-form(method='POST' action="/contact" role="form" id="contact-form")
-  input(type='hidden', name='_csrf', value=_csrf)
-  if (unknownUser)
-    .form-group
-      label.col-md-12.control-label(for='name') Name
-      .col-md-12
-        input.form-control(type='text', name='name', id='name', autocomplete='name', autofocus=true)
-    .form-group
-      label.col-md-12.control-label(for='email') E-Mail Adresse
-      .col-md-12
-        input.form-control(type='text', name='email', id='email', autocomplete='email')
-  .form-group
-    label.col-md-12.control-label(for='message') Deine Nachricht
-    .col-md-12
-      textarea.form-control(name='message', id='message', rows='7', autofocus=(!unknownUser).toString())
-  .form-group
-    .col-md-12
-      button.btn.btn-success.btn-sm(id="send-contact-form")
-        i.far.fa-envelope.fa-sm
-        | &nbsp;
-        | Senden
+extends layout_map
+
+block content  
+
+  .top-container.col-md-3.col-sm-6.col-xs-12.mx-auto
+    h4 Feedback
+    hr
+    form(method='POST' action="/contact" role="form" id="contact-form")
+      input(type='hidden', name='_csrf', value=_csrf)
+      if (unknownUser)
+        .form-group
+          label.col-md-12.control-label(for='name') Name
+          .col-md-12
+            input.form-control(type='text', name='name', id='name', autocomplete='name', autofocus=true)
+        .form-group
+          label.col-md-12.control-label(for='email') E-Mail Adresse
+          .col-md-12
+            input.form-control(type='text', name='email', id='email', autocomplete='email')
+      .form-group
+        label.col-md-12.control-label(for='message') Deine Nachricht
+        .col-md-12
+          textarea.form-control(name='message', id='message', rows='7', autofocus=(!unknownUser).toString())
+      .form-group
+        .col-md-12
+          button.btn.btn-success.btn-sm(id="send-contact-form")
+            i.far.fa-envelope.fa-sm
+            | &nbsp;
+            | Senden

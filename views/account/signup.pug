@@ -1,22 +1,28 @@
-.col-md-12
-  h4 Account Erstellen
-  hr
-form(id='signup-form' method='POST' action="/signup")
-  input(type='hidden', name='_csrf', value=_csrf)
-  .form-group
-    label.col-md-12.control-label(for='email') E-Mailadresse
-    .col-md-12
-      input.form-control(type='email', name='email', id='email', placeholder='Email', autofocus, autocomplete='email', required)
-  .form-group
-    label.col-md-12.control-label(for='password') Passwort
-    .col-md-12
-      input.form-control(type='password', name='password', id='password', placeholder='Password', autocomplete='new-password', required)
-  .form-group
-    label.col-md-12.control-label(for='confirmPassword') Passwort Wiederholen
-    .col-md-12
-      input.form-control(type='password', name='confirmPassword', id='confirmPassword', placeholder='Confirm Password', autocomplete='new-password', required)
-  .form-group.col-md-12
-    button.btn.btn-success(type='submit')
-      i.fas.fa-user-plus.fa-sm
-      | &nbsp;
-      | Erstellen
+extends ../layout_map
+
+block content  
+
+  .top-container.col-md-3.col-sm-6.col-xs-12.mx-auto
+
+    h4 Account Erstellen
+    hr
+    form(id='signup-form' method='POST' action="/signup")
+      input(type='hidden', name='_csrf', value=_csrf)
+      .form-group
+        label.col-md-12.control-label(for='email') E-Mailadresse
+        .col-md-12
+          input.form-control(type='email', name='email', id='email', placeholder=' E-Mailadresse', autofocus, autocomplete='email', required)
+      .form-group
+        label.col-md-12.control-label(for='password') Passwort
+        .col-md-12
+          input.form-control(type='password', name='password', id='password', placeholder='Passwort', autocomplete='new-password', required)
+      .form-group
+        label.col-md-12.control-label(for='confirmPassword') Passwort Wiederholen
+        .col-md-12
+          input.form-control(type='password', name='confirmPassword', id='confirmPassword', placeholder='Passwort Wiederholen', autocomplete='new-password', required)
+      .form-group.col-md-12
+        button.btn.btn-success(type='submit')
+          i.fas.fa-user-plus.fa-sm
+          | &nbsp;
+          | Erstellen
+          

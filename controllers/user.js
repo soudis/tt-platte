@@ -20,6 +20,7 @@ const render = (res, view, parameters) => {
   })  
 }
 
+
 const sendError = (res, error) => {
   console.log("ERROR: " + error);
   res.status(500).send(error);
@@ -33,9 +34,7 @@ exports.getLogin = (req, res) => {
   if (req.user) {
     return res.redirect('/');
   }
-  render(res, "account/login", {})
-    .then(login => res.send({html: login}))
-    .catch(error => sendError(res, error));
+  res.render("account/login", {title: "Login"});
 };
 
 /**
@@ -43,9 +42,7 @@ exports.getLogin = (req, res) => {
  * Profile page.
  */
 exports.getAccount = (req, res) => {
-  render(res, "account/profile", {})
-    .then(profile => res.send({html: profile}))
-    .catch(error => sendError(res, error));
+  res.render("account/profile", {title: "Profil"});
 };
 
 /**
@@ -56,9 +53,7 @@ exports.getForgot = (req, res) => {
   if (req.isAuthenticated()) {
     return res.redirect('/');
   }
-  render(res, "account/forgot", {})
-    .then(login => res.send({html: login}))
-    .catch(error => sendError(res, error));
+  res.render("account/forgot", {title: "Passwort vergessen"});
 };
 
 /**
@@ -112,9 +107,7 @@ exports.getSignup = (req, res) => {
   if (req.user) {
     return res.redirect('/');
   }
-  render(res, "account/signup", {})
-    .then(login => res.send({html: login}))
-    .catch(error => sendError(res, error));
+  res.render("account/signup", {title: "Registrieren"});
 };
 
 /**

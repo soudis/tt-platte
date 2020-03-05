@@ -24,7 +24,7 @@ var baseMaps = {
 L.control.layers(baseMaps).addTo(map);
 
 var menuControl
-function createMenu(menu) {
+/*function createMenu(menu) {
   if (menuControl) {
     map.removeLayer(menuControl);
     menuControl = undefined;
@@ -75,7 +75,7 @@ function loadMenu() {
   }); 
 }
 
-loadMenu();
+loadMenu();*/
 
 var tableIcon = L.icon({
     iconUrl: 'table.png',

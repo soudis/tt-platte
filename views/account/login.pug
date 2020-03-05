@@ -1,47 +1,51 @@
-.col-md-12
-  h4 Login
-  hr
-form(method='POST' action="/login" role="form")
-  input(type='hidden', name='_csrf', value=_csrf)
-  .form-group
-    label.col-md-12.control-label(for='email') E-Mail
-    .col-md-12
-      input.form-control(type='email', name='email', id='email', placeholder='E-Mail', autofocus, autocomplete='email', required)
-  .form-group
-    label.col-md-12.control-label(for='password') Passwort
-    .col-md-12
-      input.form-control(type='password', name='password', id='password', placeholder='Passwort', autocomplete='current-password', required)
-  .form-group
-    .col-md-12
-      button.col-md-3.btn.btn-success.btn-sm(type='submit')
-        i.far.fa-user.fa-sm
-        | &nbsp;
-        | Login
-      a.btn.btn-link.btn-sm(id='get-lostpasswd' href='#') Passwort vergessen?
-  if false     
-    .form-group
-      .col-md-12
-        hr
-    .form-group
-      .offset-md-3.col-md-7.pl-2
-        a.btn.btn-sm.btn-block.btn-facebook.btn-social(href='/auth/facebook')
-          i.fab.fa-facebook-f.fa-sm
-          | über Facebook
-        a.btn.btn-sm.btn-block.btn-twitter.btn-social(href='/auth/twitter')
-          i.fab.fa-twitter.fa-sm
-          | über Twitter
-        a.btn.btn-sm.btn-block.btn-google.btn-social(href='/auth/google')
-          i.fab.fa-google-plus-g.fa-xs
-          | über Google
-        a.btn.btn-sm.btn-block.btn-github.btn-social(href='/auth/github')
-          i.fab.fa-github.fa-sm
-          | über GitHub
-        a.btn.btn-sm.btn-block.btn-linkedin.btn-social(href='/auth/linkedin')
-          i.fab.fa-linkedin-in.fa-sm
-          | über LinkedIn
-        a.btn.btn-sm.btn-block.btn-instagram.btn-social(href='/auth/instagram')
-          i.fab.fa-instagram.fa-sm
-          | über Instagram
-        a.btn.btn-sm.btn-block.btn-snapchat.btn-social(href='/auth/snapchat')
-          i.fab.fa-snapchat-ghost.fa-sm
-          | über Snapchat
+extends ../layout_map
+
+block content  
+
+  .top-container.col-md-3.col-sm-6.col-xs-12.mx-auto
+    h4 Login
+    hr
+    form(method='POST' action="/login" role="form")
+      input(type='hidden', name='_csrf', value=_csrf)
+      .form-group
+        label.col-md-12.control-label(for='email') E-Mail
+        .col-md-12
+          input.form-control(type='email', name='email', id='email', placeholder='E-Mail', autofocus, autocomplete='email', required)
+      .form-group
+        label.col-md-12.control-label(for='password') Passwort
+        .col-md-12
+          input.form-control(type='password', name='password', id='password', placeholder='Passwort', autocomplete='current-password', required)
+      .form-group
+        .col-md-12
+          button.col-md-3.btn.btn-success.btn-sm(type='submit')
+            i.far.fa-user.fa-sm
+            | &nbsp;
+            | Login
+          a.btn.btn-link.btn-sm(href='/forgot') Passwort vergessen?
+      if false     
+        .form-group
+          .col-md-12
+            hr
+        .form-group
+          .offset-md-3.col-md-7.pl-2
+            a.btn.btn-sm.btn-block.btn-facebook.btn-social(href='/auth/facebook')
+              i.fab.fa-facebook-f.fa-sm
+              | über Facebook
+            a.btn.btn-sm.btn-block.btn-twitter.btn-social(href='/auth/twitter')
+              i.fab.fa-twitter.fa-sm
+              | über Twitter
+            a.btn.btn-sm.btn-block.btn-google.btn-social(href='/auth/google')
+              i.fab.fa-google-plus-g.fa-xs
+              | über Google
+            a.btn.btn-sm.btn-block.btn-github.btn-social(href='/auth/github')
+              i.fab.fa-github.fa-sm
+              | über GitHub
+            a.btn.btn-sm.btn-block.btn-linkedin.btn-social(href='/auth/linkedin')
+              i.fab.fa-linkedin-in.fa-sm
+              | über LinkedIn
+            a.btn.btn-sm.btn-block.btn-instagram.btn-social(href='/auth/instagram')
+              i.fab.fa-instagram.fa-sm
+              | über Instagram
+            a.btn.btn-sm.btn-block.btn-snapchat.btn-social(href='/auth/snapchat')
+              i.fab.fa-snapchat-ghost.fa-sm
+              | über Snapchat

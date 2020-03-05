@@ -1,16 +1,20 @@
-.col-md-12
-  h3 Passwort vergessen
-  hr
-form(id="lostpasswd-form" method='POST' action="/forgot" role="form")  
-  input(type='hidden', name='_csrf', value=_csrf)
-  .col-md-12
-    p Bitte gib deine E-Mail Adresse an und wir senden dir eine E-Mail mit einem Link um dein Passwort zurückzusetzen.
-  .form-group
-    label.col-md-12.control-label(for='email') E-Mail Adresse
-    .col-md-12
-      input.form-control(type='email', name='email', id='email', placeholder='E-Mail Adresse', autofocus, autocomplete='email', required)
-  .form-group.col-md-12
-    button.btn.btn-success.btn-sm(id="post-lostpasswd")
-      i.fas.fa-key.fa-sm
-      | &nbsp;
-      | Passwort zurücksetzen
+extends ../layout_map
+
+block content  
+
+  .top-container.col-md-3.col-sm-6.col-xs-12.mx-auto
+    h3 Passwort vergessen
+    hr
+    form(id="lostpasswd-form" method='POST' action="/forgot" role="form")  
+      input(type='hidden', name='_csrf', value=_csrf)
+      .col-md-12
+        p Bitte gib deine E-Mail Adresse an und wir senden dir eine E-Mail mit einem Link um dein Passwort zurückzusetzen.
+      .form-group
+        label.col-md-12.control-label(for='email') E-Mail Adresse
+        .col-md-12
+          input.form-control(type='email', name='email', id='email', placeholder='E-Mail Adresse', autofocus, autocomplete='email', required)
+      .form-group.col-md-12
+        button.btn.btn-success.btn-sm(id="post-lostpasswd")
+          i.fas.fa-key.fa-sm
+          | &nbsp;
+          | Passwort zurücksetzen

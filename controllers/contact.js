@@ -17,11 +17,15 @@ const render = (res, view, parameters) => {
  * Contact form.
  */
 exports.getContact = (req, res) => {
-  const unknownUser = !(req.user);
+  res.render( "contact", {title: "Kontakt"});
+};
 
-  render(res, "contact", {unknownUser})
-    .then(contact => res.send({html: contact}))
-    .catch(error => sendError(res, error));
+/**
+ * GET /contact
+ * Contact form.
+ */
+exports.getAbout = (req, res) => {
+  res.render( "about", {title: "Über"});
 };
 
 /**
