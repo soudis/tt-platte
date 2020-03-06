@@ -144,7 +144,7 @@ exports.rateItemCriteria = (req, res) => {
 			})
 			.then((item) => {
 				var result = {};
-				return render(res, "map/rating", {title: item.title, rating: item.avgRating().avg})
+				return render(res, "map/rating", {item: item, title: item.title, rating: item.avgRating().avg})
 					.then((html) =>  {
 						result.title = html;
 						return render(res, "map/rating_total", {avgRating: item.avgRating()});

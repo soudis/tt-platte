@@ -24,7 +24,7 @@ mixin carousel(media)
         if (val.path)  
           .carousel-item(class=(first?"active":""))
             - first = false;
-            - var url = val.path.substring(val.path.indexOf('/', 1));
+            - var url = val.findNearestImageSize(768).substring(val.path.indexOf('/', 1));
             img.d-block.w-100(src=url alt=val.description)
             .carousel-caption.d-none.d-md-block
               p=val.description

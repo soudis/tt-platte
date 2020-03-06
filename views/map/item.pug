@@ -1,14 +1,19 @@
 include media
 include ratings
 
-
-
-.popup-container
+.sidebar-content
   - var avgRating = item.avgRating()
-  h4.item-title
+  h4.item-title.sidebar-header
     raw=item.title
     | &nbsp;      
     +rating(avgRating.avg, "small", true)
+    button.btn.btn-success.btn-sm.float-right(id="close-item" ref-id=item._id)
+      i.fa.fa-times
+    if user
+      button.btn.btn-success.btn-sm.float-right(id="remove-item" ref-id=item._id)
+        i.fa.fa-trash    
+      button.btn.btn-success.btn-sm.float-right(id="edit-item" ref-id=item._id)
+        i.fa.fa-edit        
   hr
   if item.description
     p=item.description
@@ -24,10 +29,3 @@ include ratings
     .rating-container.row
       +rating_form(item)
   +rating_total(avgRating)
-  if user
-    button.btn.btn-success.btn-sm.float-right(id="remove-item" ref-id=item._id)
-      i.fa.fa-trash    
-    button.btn.btn-success.btn-sm.float-right(id="edit-item" ref-id=item._id)
-      i.fa.fa-edit
-    p.button-spacer &nbsp;
-

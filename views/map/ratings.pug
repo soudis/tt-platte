@@ -13,8 +13,9 @@ mixin rating_criteria_input(item, criteria)
     span=criteria.label
       | :&nbsp;
   .col-3(id="rating_criteria_" + criteria.name + "_" + item._id data-criteria-rating=criteriaRating data-criteria-name=criteria.name data-item-id=item._id)
-    each val in [1, 2, 3, 4, 5]
-      span.fa.fa-table-tennis.rating-criteria-input(data-rating=val ref-id="rating_criteria_" + criteria.name + "_" + item._id class=(criteriaRating>=val?"star-rating-on":"star-rating-off"))
+    .rating-criteria-container
+      each val in [1, 2, 3, 4, 5]
+        span.fa.fa-table-tennis.rating-criteria-input(data-rating=val ref-id="rating_criteria_" + criteria.name + "_" + item._id class=(criteriaRating>=val?"star-rating-on":"star-rating-off"))
 
 
 mixin rating_form(item)

@@ -93,6 +93,17 @@ var tableIcon = L.icon({
 //    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 
+var tableIconActive = L.icon({
+    iconUrl: 'table_green.png',
+//    shadowUrl: 'leaf-shadow.png',
+
+    iconSize:     [45, 45], // size of the icon
+//    shadowSize:   [50, 64], // size of the shadow
+//    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+//    shadowAnchor: [4, 62],  // the same for the shadow
+//    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+
 $(window).on("resize", function () { 
   var position = $("#map").position();
   $("#map").height($(window).height()-position.top); map.invalidateSize(); }).trigger("resize");
@@ -128,32 +139,36 @@ function carouselNormalization() {
   }
 }
 
-const onPopupOpen = (event) => {
-  $('.carousel').carousel({
-    interval: 0
-  });
-  carouselNormalization();
+var sidebar = L.control.sidebar('sidebar', {
+    position: 'right'
+});
 
-}
+map.addControl(sidebar);
+
+sidebar.hide();
 
 items = {};
 
-const addItem = (item) => {
-  items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true}).addTo(map).bindPopup(item.html, { maxWidth: "auto"}).on('popupopen', onPopupOpen);
+
+function addItem (item) {
+  items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true}).addTo(map).on('click', onPopupOpen);
+  items[item.id].html = item.html
+  return items[item.id];
+
 }
 
-const removeItem = (id) => {
+function removeItem (id) {
   items[id].closePopup();  
   map.removeLayer(items[id]);
   items[id] = undefined;
 }
 
-const refreshItemsOnMap = (items) => {
+function refreshItemsOnMap (items) {
 //  map.clearLayers();
   items.map(addItem);
 }
 
-const refreshItems = () => {
+function refreshItems () {
   $.ajax({
       type: 'get',     
       dataType: 'json',
@@ -165,7 +180,7 @@ const refreshItems = () => {
 
 var uploadedFiles = [];
 
-const initFineUploader = () => {
+function initFineUploader () {
   uploadedFiles = [];
   var form = $("#fine-uploader-gallery").parents("form");
   var galleryUploader = new qq.FineUploader({
@@ -203,24 +218,189 @@ const initFineUploader = () => {
 
 }
 
+const editItemSuccess = (item) => {
+  removeItem(item.id);
+  openItem(addItem(item));
+}
+
+const rateSuccess = (result) => {
+  $('.sidebar-content').children('h4.item-title').replaceWith(result.title);
+  $('.sidebar-content').children('.rating-total').replaceWith(result.total);
+}
+
+const initButtons = () => {
+  var removeItem = document.getElementById("remove-item");
+  if (removeItem) {
+    L.DomEvent.on(removeItem, 'click', function () {
+      removeTemporary();  
+      var id = $("#remove-item").attr('ref-id');
+      $.ajax({
+          type: 'get',     
+          dataType: 'json',
+          url: '/item/delete/' + id,
+          success: () => { removeItem(id) },
+          error: showError
+      });
+    });        
+  }
+
+  var editItem = document.getElementById("edit-item");
+  if (editItem) {
+    L.DomEvent.on(editItem, 'click', function () {
+      removeTemporary();  
+      var id = $("#edit-item").attr('ref-id');
+      $.ajax({
+          type: 'get',     
+          dataType: 'json',
+          url: '/item/edit/' + id,
+          success: showControlPane,
+          error: showError
+      }); 
+    });        
+  }
+
+  var closeItem = document.getElementById("close-item");
+  if (closeItem) {
+    L.DomEvent.on(closeItem, 'click', function () {
+      sidebar.hide();
+      if (activeItem) {
+        activeItem.setIcon(tableIcon);
+        activeItem = undefined;
+      }
+    });        
+  }  
+
+  var createItem = document.getElementById("create-item");
+  if (createItem) {
+    L.DomEvent.on(createItem, 'click', function (e) {
+      e.preventDefault();
+      var form = $('#create-item-form');
+      var data = form.serialize();
+      $.ajax({
+        type:"POST",
+        url:form.attr("action"),
+        data:data,
+        success: (response) => {      
+    //      console.log(response);  
+          map.removeLayer(tmpItem);
+          tmpItem = undefined;
+          sidebar.hide();   
+          addItem(response);
+        }
+      }); 
+    });        
+  }  
+
+  var editItemSubmit = document.getElementById("edit-item-submit");
+  if (editItemSubmit) {
+    L.DomEvent.on(editItemSubmit, 'click', function (e) {
+      console.log("submit");
+      e.preventDefault();
+      var form = $('#edit-item-form');
+      var id = form.attr('ref-id');
+      var data = form.serialize();
+      $.ajax({
+        type:"POST",
+        url:form.attr("action"),
+        data:data,
+        success: editItemSuccess
+      });  
+    });        
+  }  
+
+  var criteriaInputs = document.getElementsByClassName("rating-criteria-input");
+  if (criteriaInputs.length > 0) {
+    Array.from(criteriaInputs).forEach(criteriaInput => {
+
+      L.DomEvent.on(criteriaInput, 'click', function (e) {
+        e.preventDefault();
+        var rating = $(this).attr('data-rating');
+        var refId = $(this).attr('ref-id');
+        var ref = $("#"+refId);
+        ref.attr('data-criteria-rating', rating);
+        var criteriaName = ref.attr('data-criteria-name');
+        var itemId = ref.attr('data-item-id');
+
+        $(this).removeClass("star-rating-off");
+        $(this).addClass("star-rating-on");
+        
+        var prev = $(this).prev('span.rating-criteria-input');
+        while(prev.length > 0) {
+          prev.removeClass("star-rating-off");
+          prev.addClass("star-rating-on");
+          prev = prev.prev('span.rating-criteria-input');
+        }
+
+        var next = $(this).next('span.rating-criteria-input');
+        while(next.length > 0) {
+          next.addClass("star-rating-off");
+          next.removeClass("star-rating-on");
+          next = next.next('span.rating-criteria-input');
+        }
+
+
+        $.ajax({
+          type:"put",
+          url:'/item/rate/'+itemId+'/'+criteriaName+'/'+rating,
+          dataType: 'json',
+          success: rateSuccess,
+          error: (error) => {
+            showMessagePane("error", error.html);      
+          }
+        });    
+      }); 
+
+    })
+           
+  }  
+  var closeItem = document.getElementById("close-item");
+  if (closeItem) {
+    L.DomEvent.on(closeItem, 'click', function () {
+
+    });        
+  }  
+  var closeItem = document.getElementById("close-item");
+  if (closeItem) {
+    L.DomEvent.on(closeItem, 'click', function () {
+
+    });        
+  }  
+
+
+}
+
+var activeItem;
+
+const openItem = (item) => {
+  removeTemporary();
+  $('#sidebar').html(item.html);
+  if (activeItem) {
+    activeItem.setIcon(tableIcon);
+    activeItem = undefined;
+  }
+  activeItem = item;
+  item.setIcon(tableIconActive);
+  sidebar.show();
+  initButtons();
+
+  $('.carousel').carousel({
+    interval: 0
+  });
+  carouselNormalization();
+}
+
+const onPopupOpen = (event) => {
+  openItem(event.target);
+}
+
+
+
 var controlPane;
 var tmpItem;
 const showControlPane = (result) => { 
-  if (controlPane) {
-    map.removeControl(controlPane);
-  }
-  controlPane = L.control.custom({
-    position: 'bottomright',
-    content : result.html + '<a class="leaflet-popup-close-button" id="close-control-pane" href="#close" style="outline: currentcolor none medium;">×</a>',              
-    classes : 'col-md-12 control-pane',
-    style   :
-    {
-        margin: '10px',
-        padding: '0px 0 0 0',
-        "background-color": 'white'
-    }
-  });
-  controlPane.addTo(map);
+  $('#sidebar').html(result.html);
+  sidebar.show();
+  initButtons();
   initFineUploader();
 }
 
@@ -236,9 +416,13 @@ function removeTemporary() {
 const mapClicked = (event) => {
   if (userLoggedIn) {
     removeTemporary();
-    if (controlPane) {
-      map.removeControl(controlPane);
-      controlPane = undefined;
+    if (sidebar.isVisible()) {
+      sidebar.hide();
+      if (activeItem) {
+        activeItem.setIcon(tableIcon);
+        activeItem = undefined;
+      }
+
     } else {
       tmpItem = L.marker([event.latlng.lat,event.latlng.lng], {icon: tableIcon});
       tmpItem.addTo(map);
@@ -255,73 +439,9 @@ const mapClicked = (event) => {
 
 map.on('click', mapClicked);
 
-$(document).on("click", "#create-item", function (e) {
-  e.preventDefault();
-  var form = $('#create-item-form');
-  var data = form.serialize();
-  $.ajax({
-    type:"POST",
-    url:form.attr("action"),
-    data:data,
-    success: (response) => {      
-//      console.log(response);  
-      map.removeLayer(tmpItem);
-      tmpItem = undefined;
-      if (controlPane) {
-        map.removeControl(controlPane);
-        controlPane = undefined;
-      }      
-      addItem(response);
-    }
-  });  
-});
 
-$(document).on("click", "#edit-item", function (e) {
-  removeTemporary();  
-  var id = $("#edit-item").attr('ref-id');
-  $.ajax({
-      type: 'get',     
-      dataType: 'json',
-      url: '/item/edit/' + id,
-      success: showControlPane,
-      error: showError
-  });    
-});
 
-$(document).on("click", "#edit-item-submit", function (e) {
-  e.preventDefault();
-  var form = $('#edit-item-form');
-  var id = form.attr('ref-id');
-  var data = form.serialize();
-  $.ajax({
-    type:"POST",
-    url:form.attr("action"),
-    data:data,
-    success: (response) => {      
-//      console.log(response);  
-      removeItem(id);
-      if (controlPane) {
-        map.removeControl(controlPane);
-        controlPane = undefined;
-      }      
-      addItem(response);
-      items[id].openPopup();
-    }
-  });  
-});
-
-$(document).on("click", "#remove-item", function (e) {
-  removeTemporary();  
-  var id = $("#remove-item").attr('ref-id');
-  $.ajax({
-      type: 'get',     
-      dataType: 'json',
-      url: '/item/delete/' + id,
-      success: () => { removeItem(id) },
-      error: showError
-  });    
-});
-
+/*
 $(document).on("click", "#close-control-pane", function (e) {
   if (tmpItem) {
     map.removeLayer(tmpItem);
@@ -331,7 +451,7 @@ $(document).on("click", "#close-control-pane", function (e) {
     map.removeControl(controlPane);
     controlPane = undefined;
   }   
-});
+});*/
 
 /*$(document).on("click", "#get-login", function (e) {
   removeTemporary();  
@@ -436,47 +556,6 @@ $(document).on("click", "#send-contact-form", function (e) {
   });    
 });*/
 
-$(document).on("click", "span.rating-criteria-input", function (e) {
-  e.preventDefault();
-  var rating = $(this).attr('data-rating');
-  var refId = $(this).attr('ref-id');
-  var ref = $("#"+refId);
-  ref.attr('data-criteria-rating', rating);
-  var criteriaName = ref.attr('data-criteria-name');
-  var itemId = ref.attr('data-item-id');
-
-  $(this).removeClass("star-rating-off");
-  $(this).addClass("star-rating-on");
-  
-  var prev = $(this).prev('span.rating-criteria-input');
-  while(prev.length > 0) {
-    prev.removeClass("star-rating-off");
-    prev.addClass("star-rating-on");
-    prev = prev.prev('span.rating-criteria-input');
-  }
-
-  var next = $(this).next('span.rating-criteria-input');
-  while(next.length > 0) {
-    next.addClass("star-rating-off");
-    next.removeClass("star-rating-on");
-    next = next.next('span.rating-criteria-input');
-  }
-
-
-  $.ajax({
-    type:"put",
-    url:'/item/rate/'+itemId+'/'+criteriaName+'/'+rating,
-    dataType: 'json',
-    success: (result) => {
-      console.log("result: "+ JSON.stringify(result));
-      $(this).parents('.popup-container').children('h4.item-title').replaceWith(result.title);
-      $(this).parents('.popup-container').children('.rating-total').replaceWith(result.total);
-    },
-    error: (error) => {
-      showMessagePane("error", error.html);      
-    }
-  });    
-});
 
 var messagePane;
 function showMessagePane(type, html) {

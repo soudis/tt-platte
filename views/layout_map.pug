@@ -8,9 +8,9 @@ html
     meta(name='csrf-token', content=_csrf)
     title #{title} - TT-Platte
     link(rel='shortcut icon', href='/favicon.png')
-    link(rel='stylesheet' type="text/css" href='/css/main.css')
     link(rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="")
     link(rel="stylesheet" type="text/css" href="/fine-uploader/fine-uploader-gallery.css")
+    link(rel='stylesheet' type="text/css" href='/css/main.css')
 
     script(type="text/template" id="qq-template-gallery").
       <div class="qq-uploader-selector qq-uploader qq-gallery" qq-drop-area-text="Drop files here">
@@ -109,6 +109,7 @@ html
     script(src="/js/lib/jquery.imgexplode.min.js")
     script(src="/js/lib/leaflet/Leaflet.min.js")
     script(src="/js/lib/leaflet/Leaflet.Control.Custom.js")
+    script(src="/js/lib/leaflet-sidebar.js")
     script(type="text/javascript" src="/fine-uploader/jquery.fine-uploader.min.js")
     script(src="/js/map.js")    
     script(src='/js/main.js')

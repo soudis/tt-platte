@@ -7,6 +7,8 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 	const rimraf = require('rimraf');
 const fs = require('fs');
+const sharp = require('sharp');
+const sizeOf = require('image-size');
 const Promise = require('bluebird');
 
 // paths/constants
@@ -49,20 +51,31 @@ exports.delete = (req, res) => {
 
 }
 
+function createSizes(path, file) {
+    return sharp(path + '/' + file).resize(768).toFile(path + '/768_' + file)
+        .then(() => {
+            return [{path: path + '/768_' + file, width: 768}];
+        });
+}
 
 
 function createMediaAndSendResponse(req, res, uuid, filename, responseData) {
 	var dir = uploadedFilesPath + uuid + "/",
-        path = dir + filename;    
+        path = dir + filename;        
 
-	const media = new Media({
-		path: path,
-//		description: ???,
-		user: req.user._id,
-		likes: 0
-    });
 
-    media.save()
+    createSizes(uploadedFilesPath + uuid, filename)
+        .then((altSizes) => {
+            const media = new Media({
+                path: path,
+                altSizes: altSizes,
+                size: sizeOf(path),
+        //      description: ???,
+                user: req.user._id,
+                likes: 0
+            });            
+            return media.save();
+        })
     	.then((media) => {
     		console.log("new media: " + JSON.stringify(media));
     		responseData.success = true;

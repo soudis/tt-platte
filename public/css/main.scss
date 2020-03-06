@@ -1,6 +1,7 @@
 @import "themes/default/variables";
 
 @import "node_modules/bootstrap/scss/bootstrap";
+@import "node_modules/leaflet-sidebar-v1/src/leaflet-sidebar.scss";
 @import "node_modules/@ladjs/bootstrap-social/bootstrap-social.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
 @import "node_modules/@fortawesome/fontawesome-free/scss/brands";
@@ -269,7 +270,37 @@ span.rating-criteria-input {
   align: center;
 }
 
-.vertical-center {
-
-
+@media (min-width: 1200px) {
+  .leaflet-sidebar {
+      width: 500px;
+  }
 }
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .leaflet-sidebar {
+      width: 500px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .leaflet-sidebar {
+      width: 500px;
+  }
+}
+
+#sidebar{
+  padding-top:20px;
+}
+
+.rating-criteria-container:hover span.rating-criteria-input {
+  color: red;
+}
+
+.rating-criteria-container span.rating-criteria-input:hover ~ span.star-rating-on {
+  color: green;
+}
+
+.rating-criteria-container span.rating-criteria-input:hover ~ span.star-rating-off {
+  color: gray;
+}
+
