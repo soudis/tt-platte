@@ -9,8 +9,8 @@ services:
     ports:
      - "8084:8080"
     environment:
-     - SENDGRID_USER=soudis
-     - SENDGRID_PASSWORD=m4auliman
+     - SENDGRID_USER=user
+     - SENDGRID_PASSWORD=secret
      - RECAPTCHA_SITE_KEY=secret
      - RECAPTCHA_SECRET_KEY=secret
      - MONGODB_URI=mongodb://mongo:27017/test 

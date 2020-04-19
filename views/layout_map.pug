@@ -100,18 +100,24 @@ html
     include partials/header
 
     .container.h-100
-      include partials/flash
+      if  url === '/'
+        include partials/flash
+      else
+        include partials/flash_page
       block content
 
     script(src='/js/lib/jquery.min.js')
     script(src='/js/lib/popper.min.js')
     script(src='/js/lib/bootstrap.min.js')    
     script(src="/js/lib/jquery.imgexplode.min.js")
-    script(src="/js/lib/leaflet/Leaflet.min.js")
-    script(src="/js/lib/leaflet/Leaflet.Control.Custom.js")
-    script(src="/js/lib/leaflet-sidebar.js")
+    if  url === '/'
+      script(src="/js/lib/leaflet/Leaflet.min.js")
+      script(src="/js/lib/leaflet/Leaflet.Control.Custom.js")
+      script(src="/js/lib/L.Control.Sidebar.js")
     script(type="text/javascript" src="/fine-uploader/jquery.fine-uploader.min.js")
-    script(src="/js/map.js")    
-    script(src='/js/main.js')
+    if  url === '/'
+      script(src="/js/map.js")    
+    else
+      script(src='/js/main.js')
 
 

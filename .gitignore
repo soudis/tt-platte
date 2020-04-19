@@ -18,6 +18,8 @@ uploads
 # Optional npm cache directory
 .npm
 
+docker-compose.yml
+
 #Build
 public/css/main.css
 .nyc_output/*

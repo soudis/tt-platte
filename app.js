@@ -24,6 +24,13 @@ const config = require('./config/config');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
+const Recaptcha = require('express-recaptcha').RecaptchaV2;
+if (process.env.RECAPTCHA_SITE_KEY && process.env.RECAPTCHA_SECRET_KEY) {
+	var options = {'hl':'de', callback:'cb'};
+	var recaptcha = new Recaptcha(process.env.RECAPTCHA_SITE_KEY, process.env.RECAPTCHA_SECRET_KEY, options);	
+}
+
+
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
@@ -124,6 +131,7 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   res.locals.helper = helper;
   res.locals.config = config;
+  res.locals.url = req.url;
   next();
 });
 app.use((req, res, next) => {
@@ -148,7 +156,7 @@ app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootstrap/d
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/jquery/dist'), { maxAge: 31557600000 }));
 app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'), { maxAge: 31557600000 }));
 app.use('/fine-uploader', express.static(path.join(__dirname, 'node_modules/fine-uploader/jquery.fine-uploader'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet-sidebar-v1/src'), { maxAge: 31557600000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet-sidebar/src'), { maxAge: 31557600000 }));
 
 
 /**
@@ -161,7 +169,7 @@ app.post('/item/create', passportConfig.isAuthenticated, mapController.createIte
 app.get('/item/create/:lat/:long', passportConfig.isAuthenticated, mapController.getCreateItem);
 app.post('/item/edit', passportConfig.isAuthenticated, mapController.editItem);
 app.get('/item/edit/:id', passportConfig.isAuthenticated, mapController.getEditItem);
-app.get('/item/delete/:id', passportConfig.isAuthenticated, mapController.deleteItem);
+app.get('/item/delete/:id', passportConfig.isAdmin, mapController.deleteItem);
 app.put('/item/rate/:item_id/:criteria_name/:rating_value', passportConfig.isAuthenticated, mapController.rateItemCriteria);
 
 app.get('/map/menu', mapController.renderMenu);
@@ -176,12 +184,21 @@ app.get('/forgot', userController.getForgot);
 app.post('/forgot', userController.postForgot);
 app.get('/reset/:token', userController.getReset);
 app.post('/reset/:token', userController.postReset);
-app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
-app.get('/contact', contactController.getContact);
+app.get('/signup/:token', userController.getSignup);
+app.post('/signup/:token', userController.postSignup);
+
+app.get('/invite', passportConfig.isAdmin, userController.getInvite);
+app.post('/invite', passportConfig.isAdmin, userController.postInvite);
+if (process.env.RECAPTCHA_SITE_KEY && process.env.RECAPTCHA_SECRET_KEY) {
+	app.get('/contact', recaptcha.middleware.render, contactController.getContact);
+	app.post('/contact', recaptcha.middleware.verify, contactController.postContact);
+} else {
+	app.get('/contact', contactController.getContact);
+	app.post('/contact', contactController.postContact);
+}
+
 app.get('/about', contactController.getAbout);
 app.get('/account/profile', userController.getAccount);
-app.post('/contact', contactController.postContact);
 app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);

@@ -22,6 +22,11 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
   User.findById(id, (err, user) => {
+    if (config.admins.includes(user.email)) {
+    	user.is_admin = true;
+    } else {
+    	user.is_admin = false;
+    }
     done(err, user);
   });
 });
@@ -39,12 +44,11 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
       if (err) { return done(err); }
       if (isMatch) {
         if (config.admins.includes(user.email)) {
-          return done(null, user);
-
+        	user.is_admin = true;
         } else {
-          return done(null, false, { msg: 'User*in nicht in Adminliste' });
+        	user.is_admin = false;
         }
-
+       	return done(null, user);
       }
       return done(null, false, { msg: 'E-Mailadresse oder Passwort nicht gültig.' });
     });
@@ -600,6 +604,16 @@ passport.use('pinterest', new OAuth2Strategy({
  */
 exports.isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+};
+
+/**
+ * Login Required middleware.
+ */
+exports.isAdmin = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.is_admin) {
     return next();
   }
   res.redirect('/login');

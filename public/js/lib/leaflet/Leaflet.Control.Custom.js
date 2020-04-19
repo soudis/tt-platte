@@ -31,7 +31,7 @@
 
 
             /* Prevent click events propagation to map */
-            L.DomEvent.disableClickPropagation(this.container);
+            //L.DomEvent.disableClickPropagation(this.container);
 
             /* Prevent right click event propagation to map */
             L.DomEvent.on(this.container, 'contextmenu', function (ev)

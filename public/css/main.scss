@@ -1,7 +1,7 @@
 @import "themes/default/variables";
 
 @import "node_modules/bootstrap/scss/bootstrap";
-@import "node_modules/leaflet-sidebar-v1/src/leaflet-sidebar.scss";
+@import "node_modules/leaflet-sidebar/src/L.Control.Sidebar.scss";
 @import "node_modules/@ladjs/bootstrap-social/bootstrap-social.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
 @import "node_modules/@fortawesome/fontawesome-free/scss/brands";
@@ -272,20 +272,24 @@ span.rating-criteria-input {
 
 @media (min-width: 1200px) {
   .leaflet-sidebar {
-      width: 500px;
+      width: 550px;
   }
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
   .leaflet-sidebar {
-      width: 500px;
+      width: 550px;
   }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
   .leaflet-sidebar {
-      width: 500px;
+      width: 550px;
   }
+}
+
+.leaflet-sidebar.right {
+    right: -550px;
 }
 
 #sidebar{

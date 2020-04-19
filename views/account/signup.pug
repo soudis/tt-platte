@@ -6,12 +6,12 @@ block content
 
     h4 Account Erstellen
     hr
-    form(id='signup-form' method='POST' action="/signup")
+    form(id='signup-form' method='POST' action="/signup/"+user.passwordResetToken)
       input(type='hidden', name='_csrf', value=_csrf)
       .form-group
         label.col-md-12.control-label(for='email') E-Mailadresse
         .col-md-12
-          input.form-control(type='email', name='email', id='email', placeholder=' E-Mailadresse', autofocus, autocomplete='email', required)
+          input.form-control-plaintext(type='email', name='email', id='email', value=user.email)
       .form-group
         label.col-md-12.control-label(for='password') Passwort
         .col-md-12

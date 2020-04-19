@@ -145,6 +145,10 @@ var sidebar = L.control.sidebar('sidebar', {
 
 map.addControl(sidebar);
 
+sidebar.on('click', function(event) {
+
+})
+
 sidebar.hide();
 
 items = {};
@@ -305,8 +309,28 @@ const initButtons = () => {
         data:data,
         success: editItemSuccess
       });  
-    });        
-  }  
+    }); 
+  }
+
+  var carouselPrev = document.getElementsByClassName('carousel-control-prev');
+  if (carouselPrev.length > 0) {
+      Array.from(carouselPrev).forEach(input => {  
+      	L.DomEvent.on(input, 'click', function (e) {
+      		$("#mediaCarousel").carousel("prev");
+      	});
+    	
+      })
+  }
+
+  var carouselNext = document.getElementsByClassName('carousel-control-next');
+  if (carouselNext.length > 0) {
+      Array.from(carouselNext).forEach(input => {  
+      	L.DomEvent.on(input, 'click', function (e) {
+      		$("#mediaCarousel").carousel("next");
+      	});
+    	
+      })
+  }
 
   var criteriaInputs = document.getElementsByClassName("rating-criteria-input");
   if (criteriaInputs.length > 0) {
@@ -439,6 +463,10 @@ const mapClicked = (event) => {
 
 map.on('click', mapClicked);
 
+
+$('document').on("click", "#sidebar", function (e) {
+	console.log("clicked");
+});
 
 
 /*

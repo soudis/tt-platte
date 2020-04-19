@@ -103,11 +103,133 @@ exports.logout = (req, res) => {
  * GET /signup
  * Signup page.
  */
-exports.getSignup = (req, res) => {
-  if (req.user) {
+exports.getInvite= (req, res) => {
+  if (!req.user) {
     return res.redirect('/');
   }
-  res.render("account/signup", {title: "Registrieren"});
+  res.render("account/invite", {title: "Benutzer*in Einladen"});
+};
+
+/**
+ * POST /forgot
+ * Create a random token, then the send user an email with a reset link.
+ */
+exports.postInvite = (req, res, next) => {
+  req.assert('email', 'E-Mailadresse ist nicht gültig.').isEmail();
+
+  const errors = req.validationErrors();
+
+  if (errors) {
+    req.flash('errors', errors);
+    return res.redirect('/forgot');
+  }
+
+
+  const checkAndCreateUser = preliminaryPassword => 
+	User.findOne({ email: req.body.email })
+		.then(existingUser => {
+			if (existingUser) {
+				return existingUser;
+			} else {
+				const user = new User({
+				    email: req.body.email,
+				    password: preliminaryPassword
+				});					
+				return user.save();
+			}
+		})
+  
+
+  const createRandomToken = () => {
+  	  return randomBytesAsync(16)
+    	.then(buf => buf.toString('hex'))
+    };
+
+  const setRandomToken = token =>
+    User
+      .findOne({ email: req.body.email })
+      .then((user) => {
+      	    console.log("token: " + JSON.stringify(token));
+	      	user.passwordResetToken = token;
+	      	user.passwordResetExpires = Date.now() + 3600000; // 1 hour
+	      	return user.save();
+      });
+
+  const sendSetPasswordEmail = (user) => {
+    const token = user.passwordResetToken;
+    let transporter = nodemailer.createTransport({
+      service: 'SendGrid',
+      auth: {
+        user: process.env.SENDGRID_USER,
+        pass: process.env.SENDGRID_PASSWORD
+      }
+    });
+    const mailOptions = {
+      to: user.email,
+      from: 'no-reply@tt-platte.org',
+      subject: 'Erstelle einen Account auf tt-platte.org',
+      text: 
+`Du wurdest eingeladen einen Account auf tt-platte.org zu erstellen.\n\n
+Bitte klicke auf den folgenden Link und setze dein Passwort:\n\n
+http://${req.headers.host}/signup/${token}\n`
+    };
+    return transporter.sendMail(mailOptions)
+      .catch((err) => {
+        if (err.message === 'self signed certificate in certificate chain') {
+          console.log('WARNING: Self signed certificate in certificate chain. Retrying with the self signed certificate. Use a valid certificate if in production.');
+          transporter = nodemailer.createTransport({
+            service: 'SendGrid',
+            auth: {
+              user: process.env.SENDGRID_USER,
+              pass: process.env.SENDGRID_PASSWORD
+            },
+            tls: {
+              rejectUnauthorized: false
+            }
+          });
+          return transporter.sendMail(mailOptions)
+        }
+       throw 'E-Mail konnte nicht versandt werden';
+        return err;
+      });
+  };
+
+  createRandomToken()
+  	.then(checkAndCreateUser)
+  	.then(createRandomToken)
+    .then(setRandomToken)
+    .then(sendSetPasswordEmail)
+    .then(() => {
+        req.flash('success', { msg: `Eine E-mail mit einem Link wurde an ${req.body.email} versandt.` });
+	    res.redirect('/');
+    })
+    .catch(error => {
+    	req.flash('errors', { msg: error});
+    	res.redirect('/invite');
+    });
+}  
+
+/**
+ * GET /signup
+ * Signup page.
+ */
+exports.getSignup= (req, res) => {
+
+  User
+    .findOne({ passwordResetToken: req.params.token })
+    .where('passwordResetExpires').gt(Date.now())
+    .exec((err, user) => {
+      if (err) { return next(err); }
+      if (!user) {
+        req.flash('errors', { msg: 'Der Link zum Setzen des Passworts ist abgelaufen.' });
+        return res.redirect('/');
+      }
+      res.render('account/signup', {
+        title: 'Account Erstellen',
+        user: user
+      });
+    });
+
 };
 
 /**
@@ -115,10 +237,8 @@ exports.getSignup = (req, res) => {
  * Create a new local account.
  */
 exports.postSignup = (req, res, next) => {
-  req.assert('email', 'E-Mailadresse ist nicht gültig').isEmail();
   req.assert('password', 'Passwort muss mindestes 4 Zeichen lang sein').len(4);
   req.assert('confirmPassword', 'Passwörter stimmen nicht überein').equals(req.body.password);
-  req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
   const errors = req.validationErrors();
 
@@ -127,23 +247,20 @@ exports.postSignup = (req, res, next) => {
     return res.redirect('/');
   }
 
-  const user = new User({
-    email: req.body.email,
-    password: req.body.password
-  });
-
   User.findOne({ email: req.body.email }, (err, existingUser) => {
     if (err) { return next(err); }
-    if (existingUser) {
-      req.flash('errors', { msg: 'Für diese E-Mailadresse gibt es bereits einen Account.' });
+    if (!existingUser) {
+      req.flash('errors', { msg: 'Für diese E-Mailadresse es keinen Account.' });
       return res.redirect('/');
     }
-    user.save((err) => {
+    existingUser.password = req.body.password;
+    existingUser.save((err) => {
       if (err) { return next(err); }
-      req.logIn(user, (err) => {
+      req.logIn(existingUser, (err) => {
         if (err) {
           return next(err);
         }
+        req.flash('success', {msg: 'Account erstellt'});
         res.redirect('/');
       });
     });
@@ -415,9 +532,9 @@ exports.postForgot = (req, res, next) => {
       from: 'no-reply@tt-platte.org',
       subject: 'Passwort für TT-Platte zurücksetzen',
       text: `Du bekommst diese E-Mail weil du dein Passwort auf tt-platte.org zurückgesetzt hast.\n\n
-        Bitte klicke auf den folgenden Link und folge den Anweisungen:\n\n
-        http://${req.headers.host}/reset/${token}\n\n
-        Falls du dein Passwort nicht zurücksetzen willst, ignoriere diese Nachricht.\n`
+Bitte klicke auf den folgenden Link und folge den Anweisungen:\n\n
+http://${req.headers.host}/reset/${token}\n\n
+Falls du dein Passwort nicht zurücksetzen willst, ignoriere diese Nachricht.\n`
     };
     return transporter.sendMail(mailOptions)
       .then(() => {

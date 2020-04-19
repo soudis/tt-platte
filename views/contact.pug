@@ -5,21 +5,24 @@ block content
   .top-container.col-xl-4.col-lg-6.col-md-12.col-xs-12.mx-auto
     h4 Feedback
     hr
-    form(method='POST' action="/contact" role="form" id="contact-form")
+    form.captcha-form(method='POST' action="/contact" role="form" id="contact-form")
       input(type='hidden', name='_csrf', value=_csrf)
       if (!user)
         .form-group
           label.col-md-12.control-label(for='name') Name
           .col-md-12
-            input.form-control(type='text', name='name', id='name', autocomplete='name', autofocus=true)
+            input.form-control(type='text', name='name', id='name', autocomplete='name', autofocus=true required)
         .form-group
           label.col-md-12.control-label(for='email') E-Mail Adresse
           .col-md-12
-            input.form-control(type='text', name='email', id='email', autocomplete='email')
+            input.form-control(type='text', name='email', id='email', autocomplete='email' required)
       .form-group
         label.col-md-12.control-label(for='message') Deine Nachricht
         .col-md-12
-          textarea.form-control(name='message', id='message', rows='7', autofocus=(!unknownUser).toString())
+          textarea.form-control(name='message', id='message', rows='7', autofocus=(!unknownUser).toString() required)
+      .form-group
+        .col-md-12
+          div!=captcha
       .form-group
         .col-md-12
           button.btn.btn-success.btn-sm(id="send-contact-form")

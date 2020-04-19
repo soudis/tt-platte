@@ -17,7 +17,7 @@ const render = (res, view, parameters) => {
  * Contact form.
  */
 exports.getContact = (req, res) => {
-  res.render( "contact", {title: "Kontakt"});
+  res.render( "contact", {captcha:res.recaptcha, title: "Kontakt"});
 };
 
 /**
@@ -41,11 +41,17 @@ exports.postContact = (req, res) => {
   }
   req.assert('message', 'Message cannot be blank').notEmpty();
 
+
+  
   const errors = req.validationErrors();
 
   if (errors) {
     req.flash('errors', errors);
     return res.redirect('/contact');
+  } else if (process.env.RECAPTCHA_SITE_KEY && process.env.RECAPTCHA_SECRET_KEY && req.recaptcha.error) {  
+  	req.flash('errors', [{msg: 'Leider kein Zutritt für Roboter'}]);
+  	console.log('error: ' + JSON.stringify(req.recaptcha.error));
+    return res.redirect('/contact');  	
   }
 
   if (!req.user) {
