@@ -12,16 +12,16 @@
           a.nav-link(href='/') Karte      
         li.nav-item(class=(title === 'Über') ? 'active' : undefined)
           a.nav-link(href='/about') Über uns
-        li.nav-item(class=(title === 'API Examples') ? 'active' : undefined)
+        li.nav-item(class=(title === 'Kontakt') ? 'active' : undefined)
           a.nav-link(href='/contact') Kontakt
       ul.nav.navbar-nav.ml-auto
         if !user
           li.nav-item(class=(title === 'Login') ? 'active' : undefined)
             a.nav-link(href='/login') Login
-          li.nav-item(class=(title === 'Create Account') ? 'active' : undefined)
+          li.nav-item(class=(title === 'Registieren') ? 'active' : undefined)
             a.nav-link(href='/signup') Registrieren
         else
-          li.dropdown(class=(title === 'Account Management') ? 'active' : undefined).nav-item
+          li.dropdown(class=(title === 'Profil') ? 'active' : undefined).nav-item
             a.dropdown-toggle.nav-link(href='#', data-toggle='dropdown')
               if user.profile.picture
                 img(src=user.profile.picture)
@@ -30,5 +30,7 @@
               span= user.profile.name || user.email || user.id
               i.caret
             ul.dropdown-menu
+              li.dropdown-item(class=(title === 'Profil') ? 'active' : undefined)
+                a(href='/account/profile') Profil
               li.dropdown-item
                 a(href='/logout') Logout

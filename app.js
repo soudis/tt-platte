@@ -180,6 +180,7 @@ app.get('/signup', userController.getSignup);
 app.post('/signup', userController.postSignup);
 app.get('/contact', contactController.getContact);
 app.get('/about', contactController.getAbout);
+app.get('/account/profile', userController.getAccount);
 app.post('/contact', contactController.postContact);
 app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);

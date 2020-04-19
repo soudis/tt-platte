@@ -11,6 +11,8 @@ services:
     environment:
      - SENDGRID_USER=soudis
      - SENDGRID_PASSWORD=m4auliman
+     - RECAPTCHA_SITE_KEY=secret
+     - RECAPTCHA_SECRET_KEY=secret
      - MONGODB_URI=mongodb://mongo:27017/test 
     links:
      - mongo 
