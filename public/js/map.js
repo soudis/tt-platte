@@ -177,19 +177,19 @@ var sidebar = L.control.sidebar('sidebar', {
 
 map.addControl(sidebar);
 
-sidebar.on('click', function(event) {
-
-})
-
 sidebar.hide();
 
-var me;
+L.control.locate({
+	strings: {
+        title: "Wo bin ich?"
+    },
+    showPopup: false,
+    onLocationError: function (error) {
+    	bootbox.alert("Deine Position wurde nicht gefunden...");
+    }
 
-map.locate({maxZoom: 10, setView: true});
+}).addTo(map);
 
-map.on('locationfound', function(event) {
-	me = L.marker(event.latLong).addTo(map);
-})
 
 items = {};
 
