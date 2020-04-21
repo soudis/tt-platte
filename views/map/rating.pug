@@ -1,14 +1,3 @@
 include ratings
 
-h4.item-title
-  raw=title
-  | &nbsp;   
-  +rating(rating, "small", true)
-  button.btn.btn-success.btn-sm.float-right(id="close-item" ref-id=item._id)
-    i.fa.fa-times
-  if user
-    if user.is_admin    
-      button.btn.btn-success.btn-sm.float-right(id="remove-item" ref-id=item._id)
-        i.fa.fa-trash    
-    button.btn.btn-success.btn-sm.float-right(id="edit-item" ref-id=item._id)
-      i.fa.fa-edit      
++item_rating(item, rating)

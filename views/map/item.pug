@@ -3,18 +3,7 @@ include ratings
 
 .sidebar-content
   - var avgRating = item.avgRating()
-  h4.item-title.sidebar-header
-    raw=item.title
-    | &nbsp;      
-    +rating(avgRating.avg, "small", true)
-    button.btn.btn-success.btn-sm.float-right(id="close-item" ref-id=item._id)
-      i.fa.fa-times
-    if user
-      if user.is_admin
-        button.btn.btn-success.btn-sm.float-right(id="remove-item" ref-id=item._id)
-          i.fa.fa-trash    
-      button.btn.btn-success.btn-sm.float-right(id="edit-item" ref-id=item._id)
-        i.fa.fa-edit        
+  +item_rating(item, avgRating.avg)
   hr
   if item.description
     p=item.description

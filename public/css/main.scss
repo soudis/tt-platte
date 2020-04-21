@@ -209,6 +209,26 @@ span.rating-criteria-input {
    cursor: pointer;
 }
 
+.rating-container .rating, .rating-container .rating-label, .rating {
+  white-space: nowrap;
+}
+
+.action-container {
+  white-space: nowrap;  
+}
+
+.col-fit {
+  width: 0;
+}
+
+.leaflet-control-layers {
+  z-index: 800;
+}
+
+.leaflet-sidebar {
+  z-index: 900;
+}
+
 .blurred {
 
     filter: blur(10px);
@@ -271,26 +291,30 @@ span.rating-criteria-input {
   align: center;
 }
 
-@media (min-width: 1200px) {
-  .leaflet-sidebar {
-      width: 550px;
-  }
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-  .leaflet-sidebar {
-      width: 550px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  .leaflet-sidebar {
-      width: 550px;
-  }
-}
-
+  @media (min-width: 768px) and (max-width: 991px) {
+    .leaflet-sidebar {
+      width: 500px; }
+      .leaflet-sidebar.left.visible ~ .leaflet-left {
+        left: 500px; }
+      .leaflet-sidebar.right.visible ~ .leaflet-right {
+        right: 500px; } }
+  @media (min-width: 992px) and (max-width: 1199px) {
+    .leaflet-sidebar {
+      width: 500px; }
+      .leaflet-sidebar.left.visible ~ .leaflet-left {
+        left: 500px; }
+      .leaflet-sidebar.right.visible ~ .leaflet-right {
+        right: 500px; } }
+  @media (min-width: 1200px) {
+    .leaflet-sidebar {
+      width: 500px; }
+      .leaflet-sidebar.left.visible ~ .leaflet-left {
+        left: 500px; }
+      .leaflet-sidebar.right.visible ~ .leaflet-right {
+        right: 500px; } }
 .leaflet-sidebar.right {
     right: -550px;
+    transition: right $transition-duration, width $transition-duration;
 }
 
 #sidebar{

@@ -29,10 +29,26 @@ mixin rating_total(avgRating)
         b Gesamtbewertung:
     .rating-container.row
       each criteria in avgRating.criteria
-        .text-right.col-3
+        .text-right.col-3.rating-label
           span= helper.getCriteriaLabel(criteria.name)
           | :
-        .col-3
+        .col-3.rating
           +rating(criteria.value)
           | &nbsp
           span.small (#{criteria.value})
+
+mixin item_rating(item, rating)          
+  h5.item-title
+    span=item.title
+    button.btn.btn-success.btn-sm.float-right(id="close-item" ref-id=item._id)
+      i.fa.fa-times
+    if user
+      if user.is_admin    
+        button.btn.btn-success.btn-sm.float-right(id="remove-item" ref-id=item._id)
+          i.fa.fa-trash    
+      button.btn.btn-success.btn-sm.float-right(id="edit-item" ref-id=item._id)
+        i.fa.fa-edit      
+  div.h5
+    span  
+    span.rating
+      +rating(rating, "small", true)

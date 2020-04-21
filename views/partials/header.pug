@@ -3,10 +3,10 @@
     a.navbar-brand(href='/')
       img(src="/favicon.png" width="24")
       |  TT-Platte
-    button.navbar-toggler(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+    button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbar-collapse')
       span.sr-only Toggle navigation
       span.navbar-toggler-icon
-    .collapse.navbar-collapse
+    .collapse.navbar-collapse(id='navbar-collapse')
       ul.nav.navbar-nav
         li.nav-item(class=(title === 'Karte') ? 'active' : undefined)
           a.nav-link(href='/') Karte      
@@ -19,19 +19,15 @@
           li.nav-item(class=(title === 'Login') ? 'active' : undefined)
             a.nav-link(href='/login') Login
         else
-          li.dropdown(class=(title === 'Profil') ? 'active' : undefined).nav-item
-            a.dropdown-toggle.nav-link(href='#', data-toggle='dropdown')
+          li.nav-item.dropdown(class=(title === 'Profil') ? 'active' : undefined)
+            a.dropdown-toggle.nav-link(href='#' data-toggle='dropdown')
               if user.profile.picture
                 img(src=user.profile.picture)
               else
                 img(src=user.gravatar(60))
               span= user.profile.name || user.email || user.id
-              i.caret
-            ul.dropdown-menu
-              li.dropdown-item(class=(title === 'Profil') ? 'active' : undefined)
-                a(href='/account/profile') Profil
+            ul.dropdown-menu(id='profile-dropdown')
+              a.dropdown-item(href='/account/profile') Profil
               if (user.is_admin)
-                li.dropdown-item(class=(title === 'Benutzer*in Einladen') ? 'active' : undefined)
-                  a(href='/invite') Einladen
-              li.dropdown-item
-                a(href='/logout') Logout
+                  a.dropdown-item(href='/invite') Einladen
+              a.dropdown-item(href='/logout') Logout

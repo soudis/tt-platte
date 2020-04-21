@@ -187,8 +187,7 @@ L.control.locate({
     onLocationError: function (error) {
     	bootbox.alert("Deine Position wurde nicht gefunden...");
     },
-    keepCurrentZoomLevel: true,
-    flyTo: true
+    keepCurrentZoomLevel: true
 
 }).addTo(map);
 
