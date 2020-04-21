@@ -98,7 +98,7 @@ itemSchema.methods.avgRating = function() {
     })
   }
   if (count > 0 ) {
-    var result = { avg: sum/count, criteria: []}
+    var result = { avg: Math.round(sum/count*100)/100, criteria: []}
     config.rating_criteria.table_tennis.forEach((entry) => {
       if ( criteria[entry.name] && criteria[entry.name].count > 0 ) {
         result.criteria.push({name: entry.name, value: criteria[entry.name].sum/criteria[entry.name].count });

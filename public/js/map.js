@@ -14,6 +14,33 @@ var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x
     accessToken: 'pk.eyJ1Ijoic291ZGlzIiwiYSI6ImNqdXNwMmdyYTBsdng0NHA1OHoxb3UyMDMifQ._7f-z0VD4yYRRz97YjtxXg'
 })
 
+var BasemapAT_orthofoto = L.tileLayer('https://maps{s}.wien.gv.at/basemap/bmaporthofoto30cm/{type}/google3857/{z}/{y}/{x}.{format}', {
+	maxZoom: 23,
+	attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+	subdomains: ["", "1", "2", "3", "4"],
+	type: 'normal',
+	format: 'jpeg',
+	bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
+});
+
+var BasemapAT_overlay = L.tileLayer('https://maps{s}.wien.gv.at/basemap/bmapoverlay/{type}/google3857/{z}/{y}/{x}.{format}', {
+	maxZoom: 19,
+	attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+	subdomains: ["", "1", "2", "3", "4"],
+	type: 'normal',
+	format: 'png',
+	bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
+});
+
+var BasemapAT_basemap = L.tileLayer('https://maps{s}.wien.gv.at/basemap/geolandbasemap/{type}/google3857/{z}/{y}/{x}.{format}', {
+	maxZoom: 20,
+	attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+	subdomains: ["", "1", "2", "3", "4"],
+	type: 'normal',
+	format: 'png',
+	bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
+});
+
 var map = L.map('map', {
     center: [48.2953, 14.273],
     zoom: 13,
@@ -23,8 +50,13 @@ var map = L.map('map', {
 var baseMaps = {
     "Satellit": satellite,
     "Karte": streets
+    //"Basemap": BasemapAT_basemap,
+    //"Basemap (Satellit)": BasemapAT_orthofoto
 };
 
+var overlayMaps = {
+	//"Basemap": BasemapAT_overlay
+}
 
 L.control.layers(baseMaps, undefined).addTo(map);
 
@@ -86,7 +118,7 @@ var tableIcon = L.icon({
     iconUrl: 'table.png',
 //    shadowUrl: 'leaf-shadow.png',
 
-    iconSize:     [45, 45], // size of the icon
+    iconSize:     [50, 75], // size of the icon
 //    shadowSize:   [50, 64], // size of the shadow
 //    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
 //    shadowAnchor: [4, 62],  // the same for the shadow
@@ -94,12 +126,12 @@ var tableIcon = L.icon({
 });
 
 var tableIconActive = L.icon({
-    iconUrl: 'table_green.png',
+    iconUrl: 'animation.gif',
 //    shadowUrl: 'leaf-shadow.png',
 
-    iconSize:     [45, 45], // size of the icon
+    iconSize:     [50, 75], // size of the icon
 //    shadowSize:   [50, 64], // size of the shadow
-//    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+//    iconAnchor:   [20, 60], // point of the icon which will correspond to marker's location
 //    shadowAnchor: [4, 62],  // the same for the shadow
 //    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
@@ -151,6 +183,14 @@ sidebar.on('click', function(event) {
 
 sidebar.hide();
 
+var me;
+
+map.locate({maxZoom: 10, setView: true});
+
+map.on('locationfound', function(event) {
+	me = L.marker(event.latLong).addTo(map);
+})
+
 items = {};
 
 
@@ -165,6 +205,11 @@ function removeItem (id) {
   items[id].closePopup();  
   map.removeLayer(items[id]);
   items[id] = undefined;
+  sidebar.hide();
+  if (activeItem) {
+    activeItem.setIcon(tableIcon);
+    activeItem = undefined;
+  }  
 }
 
 function refreshItemsOnMap (items) {
@@ -222,6 +267,23 @@ function initFineUploader () {
 
 }
 
+const confirmBox = (text, callback) => {
+	bootbox.confirm({
+	    message: text,
+	    buttons: {
+	        confirm: {
+	            label: 'Okay',
+	            className: 'btn-success'
+	        },
+	        cancel: {
+	            label: 'Lieber nicht',
+	            className: 'btn-danger'
+	        }
+	    },
+	    callback: callback
+	});
+}
+
 const editItemSuccess = (item) => {
   removeItem(item.id);
   openItem(addItem(item));
@@ -230,21 +292,27 @@ const editItemSuccess = (item) => {
 const rateSuccess = (result) => {
   $('.sidebar-content').children('h4.item-title').replaceWith(result.title);
   $('.sidebar-content').children('.rating-total').replaceWith(result.total);
+  removeItem(result.item.id);
+  openItem(addItem(result.item));  
 }
 
 const initButtons = () => {
-  var removeItem = document.getElementById("remove-item");
-  if (removeItem) {
-    L.DomEvent.on(removeItem, 'click', function () {
+  var removeItemButton = document.getElementById("remove-item");
+  if (removeItemButton) {
+    L.DomEvent.on(removeItemButton, 'click', function () {
       removeTemporary();  
-      var id = $("#remove-item").attr('ref-id');
-      $.ajax({
-          type: 'get',     
-          dataType: 'json',
-          url: '/item/delete/' + id,
-          success: () => { removeItem(id) },
-          error: showError
-      });
+      confirmBox("Willst du diesen Tisch wirklich löschen?", function(result) {
+      	if(result) {
+			var id = $("#remove-item").attr('ref-id');
+	      	$.ajax({
+	          type: 'get',     
+	          dataType: 'json',
+	          url: '/item/delete/' + id,
+	          success: () => { removeItem(id) },
+	          error: showError
+	      	});      		
+      	}
+      })
     });        
   }
 
@@ -377,18 +445,7 @@ const initButtons = () => {
     })
            
   }  
-  var closeItem = document.getElementById("close-item");
-  if (closeItem) {
-    L.DomEvent.on(closeItem, 'click', function () {
 
-    });        
-  }  
-  var closeItem = document.getElementById("close-item");
-  if (closeItem) {
-    L.DomEvent.on(closeItem, 'click', function () {
-
-    });        
-  }  
 
 
 }

@@ -121,7 +121,7 @@ exports.postInvite = (req, res, next) => {
 
   if (errors) {
     req.flash('errors', errors);
-    return res.redirect('/forgot');
+    return res.redirect('/invite');
   }
 
 

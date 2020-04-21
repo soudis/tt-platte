@@ -71,7 +71,9 @@ exports.createItem = (req, res) => {
         description: req.body.description
     });
 
+
     item.save()
+    	.then(item => Item.findOne({_id: item._id}).exec())
     	.then(item => renderItem(res, item))
     	.then(item => res.send(item))
 		.catch(error => sendError(res, error));
@@ -149,8 +151,12 @@ exports.rateItemCriteria = (req, res) => {
 						result.title = html;
 						return render(res, "map/rating_total", {avgRating: item.avgRating()});
 					})
-					.then((html) => {
+					.then((html) =>  {
 						result.total = html;
+						return renderItem(res, item);
+					})					
+					.then((item) => {
+						result.item = item;
 						return result
 					})
 			})
