@@ -131,7 +131,11 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   res.locals.helper = helper;
   res.locals.config = config;
-  res.locals.url = req.url;
+  if (req.url.startsWith('/?')) {
+  	res.locals.url= '/';
+  } else {
+	res.locals.url = req.url;
+  }  
   next();
 });
 app.use((req, res, next) => {
@@ -209,7 +213,7 @@ app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userControl
 /**
  * API examples routes.
  */
-app.get('/api', apiController.getApi);
+/*app.get('/api', apiController.getApi);
 app.get('/api/lastfm', apiController.getLastfm);
 app.get('/api/nyt', apiController.getNewYorkTimes);
 app.get('/api/aviary', apiController.getAviary);
@@ -236,12 +240,12 @@ app.get('/api/lob', apiController.getLob);
 app.get('/api/pinterest', passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getPinterest);
 app.post('/api/pinterest', passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.postPinterest);
 app.get('/api/google-maps', apiController.getGoogleMaps);
-app.get('/api/chart', apiController.getChart);
+app.get('/api/chart', apiController.getChart);*/
 
 /**
  * OAuth authentication routes. (Sign in)
  */
-app.get('/auth/instagram', passport.authenticate('instagram'));
+/*app.get('/auth/instagram', passport.authenticate('instagram'));
 app.get('/auth/instagram/callback', passport.authenticate('instagram', { failureRedirect: '/login' }), (req, res) => {
   res.redirect(req.session.returnTo || '/');
 });
@@ -268,27 +272,27 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedi
 app.get('/auth/linkedin', passport.authenticate('linkedin', { state: 'SOME STATE' }));
 app.get('/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: '/login' }), (req, res) => {
   res.redirect(req.session.returnTo || '/');
-});
+});*/
 
 /**
  * OAuth authorization routes. (API examples)
  */
-app.get('/auth/foursquare', passport.authorize('foursquare'));
-app.get('/auth/foursquare/callback', passport.authorize('foursquare', { failureRedirect: '/api' }), (req, res) => {
-  res.redirect('/api/foursquare');
-});
-app.get('/auth/tumblr', passport.authorize('tumblr'));
-app.get('/auth/tumblr/callback', passport.authorize('tumblr', { failureRedirect: '/api' }), (req, res) => {
-  res.redirect('/api/tumblr');
-});
-app.get('/auth/steam', passport.authorize('openid', { state: 'SOME STATE' }));
-app.get('/auth/steam/callback', passport.authorize('openid', { failureRedirect: '/api' }), (req, res) => {
-  res.redirect(req.session.returnTo);
-});
-app.get('/auth/pinterest', passport.authorize('pinterest', { scope: 'read_public write_public' }));
-app.get('/auth/pinterest/callback', passport.authorize('pinterest', { failureRedirect: '/login' }), (req, res) => {
-  res.redirect('/api/pinterest');
-});
+// app.get('/auth/foursquare', passport.authorize('foursquare'));
+// app.get('/auth/foursquare/callback', passport.authorize('foursquare', { failureRedirect: '/api' }), (req, res) => {
+//   res.redirect('/api/foursquare');
+// });
+// app.get('/auth/tumblr', passport.authorize('tumblr'));
+// app.get('/auth/tumblr/callback', passport.authorize('tumblr', { failureRedirect: '/api' }), (req, res) => {
+//   res.redirect('/api/tumblr');
+// });
+// app.get('/auth/steam', passport.authorize('openid', { state: 'SOME STATE' }));
+// app.get('/auth/steam/callback', passport.authorize('openid', { failureRedirect: '/api' }), (req, res) => {
+//   res.redirect(req.session.returnTo);
+// });
+// app.get('/auth/pinterest', passport.authorize('pinterest', { scope: 'read_public write_public' }));
+// app.get('/auth/pinterest/callback', passport.authorize('pinterest', { failureRedirect: '/login' }), (req, res) => {
+//   res.redirect('/api/pinterest');
+// });
 
 /**
  * Error Handler.
