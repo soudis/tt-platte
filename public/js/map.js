@@ -516,6 +516,14 @@ const mapClicked = (event) => {
           error: showError
       });    
     }
+  } else {
+  	if (sidebar.isVisible()) {
+      sidebar.hide();
+      if (activeItem) {
+        activeItem.setIcon(tableIcon);
+        activeItem = undefined;
+      }
+  	}
   }
 }
 
