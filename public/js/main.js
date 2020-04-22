@@ -77,7 +77,13 @@ $(document).ready(function() {
 	});
 
 
-  }  
+  } else if (window.location.pathname !== '/') {
+	$('#places-select').change(function(event) {
+	  	var newPlace = this.value;
+	  	$.get('/set/'+newPlace, function(data) {
+	  	})
+	});    	
+  } 
 
     $(document).on('click', '#table-table td', function () {
         var tr = $(this).parent();
