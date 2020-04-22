@@ -152,6 +152,24 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+app.use((req,res,next) => {
+	if (req.subdomains && req.subdomains.length > 0) {
+		var place = config.places.find(place => { return place.subdomains.includes(req.subdomains[0].toLowerCase())});
+		if (place) {
+			var hostname = req.hostname.split('.');
+			var tld = hostname.pop();
+			var domain = hostname.pop();
+			res.redirect(req.protocol + '://' + domain + '.' + tld + '/p/' + place.id);
+		} else {
+			next();
+		}
+	} else {
+		next();	
+	}
+	
+});
+
 app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: 31557600000 }));
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/chart.js/dist'), { maxAge: 31557600000 }));
@@ -169,6 +187,8 @@ app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet-sid
  * Primary app routes.
  */
 app.get('/',mapController.showMap);
+app.get('/set/:place',mapController.setPlace);
+app.get('/p/:place',mapController.goPlace);
 
 app.get('/item/fetch',mapController.fetchItems);
 app.post('/item/create', passportConfig.isAuthenticated, mapController.createItem);

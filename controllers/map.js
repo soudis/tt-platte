@@ -4,6 +4,7 @@ const Media = require('../models/Media');
 const User = require('../models/User');
 const Promise = require('bluebird');
 const helper = require('../utils/helper');
+const config = require('../config/config.json');
 
 function render(res, view, parameters) {
 	return new Promise((resolve, reject) => {
@@ -39,6 +40,23 @@ exports.showMap = (req, res) => {
     title: 'Karte'
   });
 };
+
+exports.setPlace = (req, res) => {
+  if (req.params.place) {
+  	req.session.place = config.places.find(place => {return place.id === req.params.place}) || config.places[0];
+  } 
+  res.json({place: req.session.place})
+};
+
+exports.goPlace = (req, res) => {
+  if (req.params.place) {
+  	console.log("place set " + config.places.find(place => {return place.id === req.params.place}) || config.places[0]);
+  	req.session.place = config.places.find(place => {return place.id === req.params.place}) || config.places[0];
+  } 
+  res.redirect('/');
+};
+
+
 
 exports.fetchItems = (req, res) => {
 	Item.find().exec()

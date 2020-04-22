@@ -14,6 +14,14 @@
           a.nav-link(href='/about') Über uns
         li.nav-item(class=(title === 'Kontakt') ? 'active' : undefined)
           a.nav-link(href='/contact') Kontakt
+      form.navbar-form.navbar-right.ml-auto
+        .input-group
+          .input-group-prepend.transparent
+            span.input-group-text.fa.fa-city
+          select.custom-select.custom-select-sm(id='places-select' autocomplete='off')
+            - currentPlace = session.place || config.places[0]
+            each place in config.places
+              option(value=place.id selected=(place.id===currentPlace.id?"selected":undefined))= place.label
       ul.nav.navbar-nav.ml-auto
         if !user
           li.nav-item(class=(title === 'Login') ? 'active' : undefined)

@@ -1,7 +1,8 @@
 extends ../layout_map
 
 block content  
-  div(id="map" class=(session.visited < 2?"blurred":""))
+  - console.log('session place ' + JSON.stringify(session.place))
+  div(id="map" class=(session.visited < 2?"blurred":"") data-place=JSON.stringify(session.place || config.places[0]))
   if (session.visited < 2)
     div.row.h-100.z-top(id="logo-overlay")
       img.title-logo(width="592" src="tt_logo_bunt.png")

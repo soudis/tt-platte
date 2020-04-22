@@ -41,11 +41,15 @@ var BasemapAT_basemap = L.tileLayer('https://maps{s}.wien.gv.at/basemap/geolandb
 	bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
 });
 
+var place = $('#map').data('place')
+
 var map = L.map('map', {
-    center: [48.2953, 14.273],
-    zoom: 13,
+    center: place.center,
+    zoom: place.zoom,
     layers: [ streets]
 });
+
+
 
 var baseMaps = {
     "Satellit": satellite,
@@ -697,6 +701,14 @@ $(document).ready(function() {
     $(".blurred").addClass("unblurred");
     logo.addTo(map);  
   }
+
+  $('#places-select').change(function(event) {
+  	var newPlace = this.value;
+  	$.get('/set/'+newPlace, function(data) {
+  		place = data.place;
+  		map.flyTo(place.center, place.zoom);
+  	})
+  });
 });
 
 

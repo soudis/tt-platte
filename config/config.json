@@ -7,6 +7,33 @@
 			{ "name": "infrastructure", "label": "Infrastruktur" }
 		]
 	},
+	"places": [
+		{
+			"id": "linz",
+			"label": "Linz",
+			"subdomains": ["linz"],
+			"center": [48.2953, 14.273],
+			"zoom": 13,
+			"bounds": [[48.340802, 14.168808],[48.209300, 14.409063]]
+		},
+		{
+			"id": "wien",
+			"label": "Wien",
+			"subdomains": ["wien"],
+			"center": [48.209547, 16.371100],
+			"zoom": 12,
+			"bounds": [[48.331356, 16.177082],[48.074912, 16.643726]]
+		},
+		{
+			"id": "graz",
+			"label": "Graz",
+			"subdomains": ["graz"],
+			"center": [47.069632, 15.438741],
+			"zoom": 13,
+			"bounds": [[47.147352, 15.321168],[46.953243, 15.556747]]
+		}
+	]
+	,
 	"admins": [
 		"florian.humer@gmail.com",
 		"birgit@servus.at"
