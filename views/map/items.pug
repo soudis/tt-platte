@@ -1,0 +1,23 @@
+include media
+include ratings
+
+mixin item(item)
+  .sidebar-content
+    - var avgRating = item.avgRating()
+    if (!attributes.noHeader)
+      +item_rating(item, avgRating.avg)
+      hr
+    if item.description
+      p=item.description
+    else
+      p Keine Beschreibung vorhanden
+    if item.media && item.media.length > 0
+      +carousel(item.media)
+    if (user)
+      - var rating = helper.getRating(user, item);
+      .row
+        .col-sm-12(style="margin-bottom: 6px; margin-top:6px;") 
+          b Deine Bewertung:
+      .rating-container.row
+        +rating_form(item)
+    +rating_total(avgRating)

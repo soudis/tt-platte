@@ -197,9 +197,11 @@ L.control.locate({
 
 
 items = {};
+itemsData = {};
 
 
 function addItem (item) {
+  itemsData[item.id] = item;
   items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true}).addTo(map).on('click', onPopupOpen);
   items[item.id].html = item.html
   return items[item.id];
@@ -217,20 +219,6 @@ function removeItem (id) {
   }  
 }
 
-function refreshItemsOnMap (items) {
-//  map.clearLayers();
-  items.map(addItem);
-}
-
-function refreshItems () {
-  $.ajax({
-      type: 'get',     
-      dataType: 'json',
-      url: '/item/fetch',
-      success: refreshItemsOnMap,
-      error: showError
-  });    
-}
 
 var uploadedFiles = [];
 
@@ -480,6 +468,30 @@ const onPopupOpen = (event) => {
 }
 
 
+function refreshItemsOnMap (refreshItems) {
+//  map.clearLayers();
+  	refreshItems.map(addItem);
+  	console.log(location.hash);
+	if (location.hash && location.hash.startsWith('#item_')) {		
+		var id = location.hash.replace('#item_','');
+		console.log(id);
+		map.flyTo(itemsData[id].latLong, 15);
+		openItem(items[id]);
+	}
+
+}
+
+function refreshItems () {
+  $.ajax({
+      type: 'get',     
+      dataType: 'json',
+      url: '/item/fetch',
+      success: refreshItemsOnMap,
+      error: showError
+  });    
+}
+
+
 
 var controlPane;
 var tmpItem;
@@ -708,7 +720,7 @@ $(document).ready(function() {
   		place = data.place;
   		map.flyTo(place.center, place.zoom);
   	})
-  });
+  });  
 });
 
 

@@ -11,6 +11,7 @@ html
     link(rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="")
     link(rel="stylesheet" type="text/css" href="/fine-uploader/fine-uploader-gallery.css")
     link(rel='stylesheet' type="text/css" href='/css/main.css')
+    link(rel="stylesheet" href="/css/lib/dataTables.bootstrap4.min.css")
 
     script(type="text/template" id="qq-template-gallery").
       <div class="qq-uploader-selector qq-uploader qq-gallery" qq-drop-area-text="Drop files here">
@@ -111,6 +112,9 @@ html
     script(src='/js/lib/bootstrap.js')    
     script(src='/js/lib/bootbox.min.js')    
     script(src="/js/lib/jquery.imgexplode.min.js")
+    script(src='/js/lib/jquery.dataTables.min.js')    
+    script(src='/js/lib/dataTables.bootstrap4.min.js')    
+
     if  url === '/'
       script(src="/js/lib/leaflet/Leaflet.min.js")
       script(src="/js/lib/leaflet/Leaflet.Control.Custom.js")

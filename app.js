@@ -21,6 +21,7 @@ const sass = require('node-sass-middleware');
 const multer = require('multer');
 const helper = require('./utils/helper');
 const config = require('./config/config');
+const moment = require('moment');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
@@ -131,6 +132,7 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   res.locals.helper = helper;
   res.locals.config = config;
+  res.locals.moment = moment;
   if (req.url.startsWith('/?')) {
   	res.locals.url= '/';
   } else {
@@ -181,6 +183,9 @@ app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet.loc
 app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'), { maxAge: 31557600000 }));
 app.use('/fine-uploader', express.static(path.join(__dirname, 'node_modules/fine-uploader/jquery.fine-uploader'), { maxAge: 31557600000 }));
 app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet-sidebar/src'), { maxAge: 31557600000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/datatables.net-bs4/js'),  { maxAge: 31557600000 }));
+app.use('/css/lib', express.static(path.join(__dirname, 'node_modules/datatables.net-bs4/css'),  { maxAge: 31557600000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/datatables.net/js'),  { maxAge: 31557600000 }));
 
 
 /**
@@ -189,6 +194,7 @@ app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet-sid
 app.get('/',mapController.showMap);
 app.get('/set/:place',mapController.setPlace);
 app.get('/p/:place',mapController.goPlace);
+app.get('/list',mapController.getList);
 
 app.get('/item/fetch',mapController.fetchItems);
 app.post('/item/create', passportConfig.isAuthenticated, mapController.createItem);

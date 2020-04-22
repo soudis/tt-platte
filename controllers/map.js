@@ -41,6 +41,30 @@ exports.showMap = (req, res) => {
   });
 };
 
+function inBounds(point, place) {
+	console.log(point[0], point[1], place.bounds[1][0], place.bounds[0][0], place.bounds[0][1], place.bounds[1][1]);
+	console.log(point[0] >= place.bounds[1][0] && point[0] <= place.bounds[0][0]
+		&& point[1] >= place.bounds[0][1] && point[1] <= place.bounds[1][1]);
+	return point[0] >= place.bounds[1][0] && point[0] <= place.bounds[0][0]
+		&& point[1] >= place.bounds[0][1] && point[1] <= place.bounds[1][1];    
+}
+
+exports.getList = (req, res, next) => {
+	Item.find().exec()
+		.then(items => {
+			return items.filter(item => { return inBounds(item.latLong, req.session.place || config.places[0])})
+		})
+		.then(itemsInPlace => {
+		  	res.render('list', {
+		    	title: 'Liste',
+		    	items: itemsInPlace,
+		    	place: req.session.place || config.places[0]
+		  	});			
+		})
+		.catch(next);
+};
+
+
 exports.setPlace = (req, res) => {
   if (req.params.place) {
   	req.session.place = config.places.find(place => {return place.id === req.params.place}) || config.places[0];
@@ -86,7 +110,8 @@ exports.createItem = (req, res) => {
         media: req.body.uploadedFiles,
         latLong: [req.body.lat, req.body.long],
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        user: req.user._id
     });
 
 

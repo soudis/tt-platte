@@ -152,6 +152,9 @@ a.btn.btn-success, a.btn.btn-block {
   }
 }
 
+tr.selected td {
+  background-color: rgba(0, 127, 0, 0.3);
+}
 
 #map {
   height: 400px;

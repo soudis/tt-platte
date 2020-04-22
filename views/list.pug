@@ -1,0 +1,26 @@
+extends layout_map
+include map/ratings
+include map/items
+
+block content  
+
+  .top-container.col-xl-6.col-lg-8.col-md-12.col-xs-12.mx-auto
+    h4= 'Tische in ' + place.label
+    hr
+    table.table(id='table-table')
+      thead
+        th Ort
+        th Bewertung
+        th Hinzugefügt am
+        th Hinzugefügt von
+        td.d-done
+      tbody
+        each item in items
+          tr(data-id=item._id)
+            td.item-title=item.title
+            td.item-rating(data-order=item.avgRating().avg)
+              +rating(item.avgRating().avg, "", true)
+            td(data-order=moment(item.createdAt).format('YYYY.MM.DDHH24mm'))=moment(item.createdAt).format('DD.MM.YYYY')
+            td=item.user&&item.user.profile?item.user.profile.name:"Admin"
+            td.d-none.table-row-details
+              +item(item)(noHeader=true)
