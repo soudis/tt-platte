@@ -201,11 +201,11 @@ itemsData = {};
 
 
 function addItem (item) {
-  itemsData[item.id] = item;
-  items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true}).addTo(map).on('click', onPopupOpen);
-  items[item.id].html = item.html
-  return items[item.id];
-
+  setTimeout(function() {
+	  itemsData[item.id] = item;
+	  items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true, bounceOnAdd: true,  bounceOnAddOptions: {duration: 700, height: 100, loop: 1}}).addTo(map).on('click', onPopupOpen);
+	  items[item.id].html = item.html	
+	}, Math.random()*500);
 }
 
 function removeItem (id) {

@@ -172,20 +172,20 @@ app.use((req,res,next) => {
 	
 });
 
-app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/chart.js/dist'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/popper.js/dist/umd'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/jquery/dist'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootbox/dist'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet.locatecontrol/dist'), { maxAge: 31557600000 }));
-app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'), { maxAge: 31557600000 }));
-app.use('/fine-uploader', express.static(path.join(__dirname, 'node_modules/fine-uploader/jquery.fine-uploader'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet-sidebar/src'), { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/datatables.net-bs4/js'),  { maxAge: 31557600000 }));
-app.use('/css/lib', express.static(path.join(__dirname, 'node_modules/datatables.net-bs4/css'),  { maxAge: 31557600000 }));
-app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/datatables.net/js'),  { maxAge: 31557600000 }));
+app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 14400000 })); // max age is 4 hours
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/chart.js/dist'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/popper.js/dist/umd'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/jquery/dist'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/bootbox/dist'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet.locatecontrol/dist'), { maxAge: 14400000 }));
+app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts'), { maxAge: 14400000 }));
+app.use('/fine-uploader', express.static(path.join(__dirname, 'node_modules/fine-uploader/jquery.fine-uploader'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/leaflet-sidebar/src'), { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/datatables.net-bs4/js'),  { maxAge: 14400000 }));
+app.use('/css/lib', express.static(path.join(__dirname, 'node_modules/datatables.net-bs4/css'),  { maxAge: 14400000 }));
+app.use('/js/lib', express.static(path.join(__dirname, 'node_modules/datatables.net/js'),  { maxAge: 14400000 }));
 
 
 /**
