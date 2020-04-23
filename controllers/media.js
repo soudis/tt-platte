@@ -22,20 +22,25 @@ maxFileSize = process.env.MAX_FILE_SIZE || 52428800; // in bytes, 0 for unlimite
 
 exports.upload = (req, res) => {
     var form = new multiparty.Form();
+    if (files[fileInputName]) {
+		form.parse(req, function(err, fields, files) {
+	        var partIndex = fields.qqpartindex;
 
-    form.parse(req, function(err, fields, files) {
-        var partIndex = fields.qqpartindex;
+	        // text/plain is required to ensure support for IE9 and older
+	        res.set("Content-Type", "text/plain");
 
-        // text/plain is required to ensure support for IE9 and older
-        res.set("Content-Type", "text/plain");
-
-        if (partIndex == null) {
-            onSimpleUpload(fields, files[fileInputName][0], req, res);
-        }
-        else {
-            onChunkedUpload(fields, files[fileInputName][0], req, res);
-        } 
-    });
+	        if (partIndex == null) {
+	            onSimpleUpload(fields, files[fileInputName][0], req, res);
+	        }
+	        else {
+	            onChunkedUpload(fields, files[fileInputName][0], req, res);
+	        } 
+	    });
+    	
+    } else {
+    	res.status(500).send();
+    }
+    
 }
 
 exports.delete = (req, res) => {
