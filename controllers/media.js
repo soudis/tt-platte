@@ -11,6 +11,7 @@ const sharp = require('sharp');
 const sizeOf = require('image-size');
 const Promise = require('bluebird');
 
+
 // paths/constants
 fileInputName = "qqfile",
 publicDir = path.join(__dirname, '../public/'),
@@ -21,24 +22,7 @@ port = process.env.SERVER_PORT || 8080,
 maxFileSize = process.env.MAX_FILE_SIZE || 52428800; // in bytes, 0 for unlimited
 
 exports.upload = (req, res) => {
-    var form = new multiparty.Form();
-		form.parse(req, function(err, fields, files) {
-    	if (files[fileInputName]) {
-	        var partIndex = fields.qqpartindex;
-
-	        // text/plain is required to ensure support for IE9 and older
-	        res.set("Content-Type", "text/plain");
-
-	        if (partIndex == null) {
-	            onSimpleUpload(fields, files[fileInputName][0], req, res);
-	        }
-	        else {
-	            onChunkedUpload(fields, files[fileInputName][0], req, res);
-	        } 
-	    } else {
-	    	res.status(500).send();
-	    }
-	}); 
+    onSimpleUpload(req.body, req.file, req, res);
 }
 
 exports.delete = (req, res) => {

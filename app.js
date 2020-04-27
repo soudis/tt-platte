@@ -23,7 +23,7 @@ const helper = require('./utils/helper');
 const config = require('./config/config');
 const moment = require('moment');
 
-const upload = multer({ dest: path.join(__dirname, 'uploads') });
+const upload = multer({ dest: path.join(__dirname, 'tmp') });
 
 const Recaptcha = require('express-recaptcha').RecaptchaV2;
 if (process.env.RECAPTCHA_SITE_KEY && process.env.RECAPTCHA_SECRET_KEY) {
@@ -206,7 +206,7 @@ app.put('/item/rate/:item_id/:criteria_name/:rating_value', passportConfig.isAut
 
 app.get('/map/menu', mapController.renderMenu);
 
-app.post('/media/upload',passportConfig.isAuthenticated, mediaController.upload);
+app.post('/media/upload',passportConfig.isAuthenticated, upload.single('qqfile'), mediaController.upload);
 app.delete('/media/delete/:uuid',passportConfig.isAuthenticated, mediaController.delete);
 
 app.get('/login', userController.getLogin);
