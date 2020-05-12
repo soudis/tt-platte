@@ -49,8 +49,6 @@ var map = L.map('map', {
     layers: [ streets]
 });
 
-
-
 var baseMaps = {
     "Satellit": satellite,
     "Karte": streets
@@ -62,7 +60,7 @@ var overlayMaps = {
 	//"Basemap": BasemapAT_overlay
 }
 
-L.control.layers(baseMaps, undefined).addTo(map);
+var layerControl = L.control.layers(baseMaps, undefined).addTo(map);
 
 var menuControl
 /*function createMenu(menu) {
@@ -183,7 +181,14 @@ map.addControl(sidebar);
 
 sidebar.hide();
 
-L.control.locate({
+var logoControl = L.control({position: 'bottomleft'});
+logoControl.onAdd = function(map){
+  var div = L.DomUtil.create('div', 'logo-watermark');
+  div.innerHTML= '<img width="92px" src="tt_logo_bunt.png"/>';
+  return div;
+}
+
+var locateControl = L.control.locate({
 	strings: {
         title: "Wo bin ich?"
     },
@@ -195,24 +200,51 @@ L.control.locate({
 
 }).addTo(map);
 
+var zoomControl = map.zoomControl;
 
 items = {};
 itemsData = {};
 
 
 function addItem (item) {
-  setTimeout(function() {
-	  itemsData[item.id] = item;
-	  items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true, bounceOnAdd: true,  bounceOnAddOptions: {duration: 700, height: 100, loop: 1}}).addTo(map).on('click', onPopupOpen);
-	  items[item.id].html = item.html	
-	}, Math.random()*500);
+	return new Promise(function (resolve, reject) {
+		itemsData[item.id] = item;	
+	    setTimeout(function() {
+	      	items[item.id] = L.marker(item.latLong, {icon: tableIcon, riseOnHover: true, bounceOnAdd: true,  bounceOnAddOptions: {duration: 700, height: 100, loop: 1}}).addTo(map).on('click', onPopupOpen);
+		  	items[item.id].html = item.html;
+		  	resolve(item);
+		}, Math.random()*500);
+	})
+	
+}
+
+var activeItem;
+
+const hideSidebar = function() {
+	logoControl.addTo(map);
+	locateControl.addTo(map);	
+	zoomControl.addTo(map);
+	layerControl.addTo(map);
+	sidebar.hide();	
+	if (activeItem) {
+		activeItem.setIcon(tableIcon);
+		activeItem = undefined;
+	}	
+}
+
+const showSidebar = function (html) {
+	zoomControl.remove();
+	logoControl.remove();
+	locateControl.remove();
+	layerControl.remove();
+	$('#sidebar').html(html);
+	sidebar.show();
 }
 
 function removeItem (id) {
   items[id].closePopup();  
   map.removeLayer(items[id]);
-  items[id] = undefined;
-  sidebar.hide();
+  items[id] = undefined;  
   if (activeItem) {
     activeItem.setIcon(tableIcon);
     activeItem = undefined;
@@ -279,14 +311,16 @@ const confirmBox = (text, callback) => {
 
 const editItemSuccess = (item) => {
   removeItem(item.id);
-  openItem(addItem(item));
+  addItem(item)
+  	.then(item => openItem);
 }
 
 const rateSuccess = (result) => {
   $('.sidebar-content').children('h4.item-title').replaceWith(result.title);
   $('.sidebar-content').children('.rating-total').replaceWith(result.total);
   removeItem(result.item.id);
-  openItem(addItem(result.item));  
+  addItem(result.item)
+  	.then(item => openItem);
 }
 
 const initButtons = () => {
@@ -327,13 +361,18 @@ const initButtons = () => {
   var closeItem = document.getElementById("close-item");
   if (closeItem) {
     L.DomEvent.on(closeItem, 'click', function () {
-      sidebar.hide();
-      if (activeItem) {
-        activeItem.setIcon(tableIcon);
-        activeItem = undefined;
-      }
+      hideSidebar();
     });        
   }  
+
+  var linkItem = document.getElementById("link-item");
+  if (linkItem) {
+    L.DomEvent.on(linkItem, 'click', function () {
+      var id = $("#link-item").data('id');
+      var title = $("#link-item").data('title');
+      bootbox.alert('<h5>Der Link direkt zum Tisch ' + title + ':</h5> <br/><br/><h6>' + window.location.protocol + '//' + window.location.hostname + '/#item_' + id + '</h6>');
+    });        
+  }    
 
   var createItem = document.getElementById("create-item");
   if (createItem) {
@@ -346,10 +385,9 @@ const initButtons = () => {
         url:form.attr("action"),
         data:data,
         success: (response) => {      
-    //      console.log(response);  
           map.removeLayer(tmpItem);
           tmpItem = undefined;
-          sidebar.hide();   
+          hideSidebar();
           addItem(response);
         }
       }); 
@@ -359,7 +397,6 @@ const initButtons = () => {
   var editItemSubmit = document.getElementById("edit-item-submit");
   if (editItemSubmit) {
     L.DomEvent.on(editItemSubmit, 'click', function (e) {
-      console.log("submit");
       e.preventDefault();
       var form = $('#edit-item-form');
       var id = form.attr('ref-id');
@@ -443,18 +480,15 @@ const initButtons = () => {
 
 }
 
-var activeItem;
-
 const openItem = (item) => {
-  removeTemporary();
-  $('#sidebar').html(item.html);
+  removeTemporary();  
   if (activeItem) {
     activeItem.setIcon(tableIcon);
     activeItem = undefined;
   }
   activeItem = item;
   item.setIcon(tableIconActive);
-  sidebar.show();
+  showSidebar(item.html);
   initButtons();
 
   $('.carousel').carousel({
@@ -467,18 +501,39 @@ const onPopupOpen = (event) => {
   openItem(event.target);
 }
 
+var initTilesLoaded = false;
+streets.on('load', function(event) {
+	initTilesLoaded = true;	
+})
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function haveInitTilesLoaded() {
+    return new Promise(function (resolve, reject) {
+        (function waitForFoo(){
+            if (initTilesLoaded) return resolve();
+            setTimeout(waitForFoo, 30);
+        })();
+    });
+}
+
+var permalinkItem;
 function refreshItemsOnMap (refreshItems) {
-//  map.clearLayers();
-  	refreshItems.map(addItem);
-  	console.log(location.hash);
-	if (location.hash && location.hash.startsWith('#item_')) {		
-		var id = location.hash.replace('#item_','');
-		console.log(id);
-		map.flyTo(itemsData[id].latLong, 15);
-		openItem(items[id]);
-	}
-
+  	Promise.all(refreshItems.map(addItem))
+  		.then(() => haveInitTilesLoaded)
+  		.then(() => sleep(700))
+  		.then(function() {
+			if (!permalinkItem && location.hash && location.hash.startsWith('#item_')) {		
+					var id = location.hash.replace('#item_','');
+					map.flyTo(itemsData[id].latLong, 15, {duration: 1.5});
+					activeItem = items[id];
+					items[id].setIcon(tableIconActive);
+					permalinkItem = items[id];
+					//openItem(items[id]);
+				}	
+  		});
 }
 
 function refreshItems () {
@@ -496,8 +551,7 @@ function refreshItems () {
 var controlPane;
 var tmpItem;
 const showControlPane = (result) => { 
-  $('#sidebar').html(result.html);
-  sidebar.show();
+  showSidebar(result.html);
   initButtons();
   initFineUploader();
 }
@@ -515,11 +569,7 @@ const mapClicked = (event) => {
   if (userLoggedIn) {
     removeTemporary();
     if (sidebar.isVisible()) {
-      sidebar.hide();
-      if (activeItem) {
-        activeItem.setIcon(tableIcon);
-        activeItem = undefined;
-      }
+      hideSidebar();
 
     } else {
       tmpItem = L.marker([event.latlng.lat,event.latlng.lng], {icon: tableIcon});
@@ -534,11 +584,7 @@ const mapClicked = (event) => {
     }
   } else {
   	if (sidebar.isVisible()) {
-      sidebar.hide();
-      if (activeItem) {
-        activeItem.setIcon(tableIcon);
-        activeItem = undefined;
-      }
+      hideSidebar();
   	}
   }
 }
@@ -547,7 +593,7 @@ map.on('click', mapClicked);
 
 
 $('document').on("click", "#sidebar", function (e) {
-	console.log("clicked");
+	
 });
 
 
@@ -695,12 +741,7 @@ $(document).on("click", "#close-message-pane", function (e) {
   }   
 });
 
-var logo = L.control({position: 'bottomleft'});
-logo.onAdd = function(map){
-  var div = L.DomUtil.create('div', 'logo-watermark');
-  div.innerHTML= '<img width="92px" src="tt_logo_bunt.png"/>';
-  return div;
-}
+
 
 $(document).ready(function() {
 
@@ -711,14 +752,14 @@ $(document).ready(function() {
 
   if ($("#logo-overlay").length == 0) {
     $(".blurred").addClass("unblurred");
-    logo.addTo(map);  
+    logoControl.addTo(map);  
   }
 
   $('#places-select').change(function(event) {
   	var newPlace = this.value;
   	$.get('/set/'+newPlace, function(data) {
   		place = data.place;
-  		map.flyTo(place.center, place.zoom);
+  		map.flyTo(place.center, place.zoom, {duration: 3.5});
   	})
   });  
 });
@@ -749,7 +790,7 @@ $( document ).on("click", ".title-logo", function() {
 
   setTimeout(() => {
     $("#logo-overlay").remove();
-    logo.addTo(map);  
+    logoControl.addTo(map);  
   }, 3000);
 
 });

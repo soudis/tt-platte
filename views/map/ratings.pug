@@ -41,13 +41,15 @@ mixin item_rating(item, rating)
   h5.item-title
     span=item.title
     button.btn.btn-success.btn-sm.float-right(id="close-item" ref-id=item._id)
-      i.fa.fa-times
+      i.fa.fa-times        
     if user
       if user.is_admin    
         button.btn.btn-success.btn-sm.float-right(id="remove-item" ref-id=item._id)
           i.fa.fa-trash    
       button.btn.btn-success.btn-sm.float-right(id="edit-item" ref-id=item._id)
         i.fa.fa-edit      
+    button.btn.btn-success.btn-sm.float-right(id="link-item" data-id=item._id data-title=item.title)
+      i.fa.fa-link        
   div.h5
     span  
     span.rating

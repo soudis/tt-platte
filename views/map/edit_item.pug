@@ -1,6 +1,8 @@
 include media
 
 .col-md-12
+  button.btn.btn-success.btn-sm.float-right(id="close-item" ref-id=item._id)
+    i.fa.fa-times  
   h4 Eintrag Bearbeiten
   hr
 form(action="/item/edit" method="POST" role="form" id="edit-item-form" ref-id=item._id)

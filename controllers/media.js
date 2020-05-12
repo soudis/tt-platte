@@ -2,7 +2,6 @@ const Item = require('../models/Item');
 const Comment = require('../models/Comment');
 const Media = require('../models/Media');
 const User = require('../models/User');
-const multiparty = require('multiparty');
 const path = require('path');
 const mkdirp = require('mkdirp');
 	const rimraf = require('rimraf');

@@ -1,6 +1,8 @@
 include media
 
 .col-md-12
+  button.btn.btn-success.btn-sm.float-right(id="close-item")
+    i.fa.fa-times    
   h4 Neuer Eintrag
   hr
 form(action="/item/create" method="POST" role="form" id="create-item-form")
