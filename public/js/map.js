@@ -1,16 +1,20 @@
 
 
-var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets-satellite/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
     maxZoom: 23,
-    id: 'mapbox.satellite',
+    zoomOffset: -1,
+    tileSize: 512,
+    id: 'mapbox/satellite-streets-v11',
     accessToken: 'pk.eyJ1Ijoic291ZGlzIiwiYSI6ImNqdXNwMmdyYTBsdng0NHA1OHoxb3UyMDMifQ._7f-z0VD4yYRRz97YjtxXg'
 })
 
-var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+var streets = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
     maxZoom: 23,
-    id: 'mapbox.streets',
+    zoomOffset: -1,
+    tileSize: 512,
+    id: 'mapbox/streets-v11',
     accessToken: 'pk.eyJ1Ijoic291ZGlzIiwiYSI6ImNqdXNwMmdyYTBsdng0NHA1OHoxb3UyMDMifQ._7f-z0VD4yYRRz97YjtxXg'
 })
 
